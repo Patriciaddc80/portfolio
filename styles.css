@@ -158,6 +158,7 @@ p {
     padding: var(--space-3) var(--space-2) var(--space-4);
     border-bottom: var(--border);
     background: var(--color-bg);
+    margin-top: 4%;
   }
   .mobile-hero-name {
     grid-column: 2;
@@ -255,7 +256,12 @@ p {
    ======================================== */
 .cv-section {
   padding: var(--space-4) var(--space-3);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-2);
   border-bottom: var(--border);
+}
+.cv-section:first-child {
+  margin-top: 0;
 }
 @media (min-width: 600px) {
   .cv-section { padding: var(--space-5); }
@@ -316,10 +322,11 @@ p {
   .cv-section .checkbox-list {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
   }
   .cv-section .checkbox-list li {
-    justify-content: center;
+    justify-content: flex-start;
+    text-align: left;
   }
   .cv-section .language-bars {
     align-items: center;
