@@ -191,8 +191,8 @@ p {
     align-items: center;
   }
   .mobile-hero-photo img {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     object-fit: cover;
     object-position: center top;
     border-radius: 50%;
