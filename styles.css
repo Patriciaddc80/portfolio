@@ -550,7 +550,6 @@ p {
 
 .education-item {
   margin-bottom: var(--space-4);
-  padding: var(--space-1) 0;
 }
 .education-item span { display: block; margin-top: 2px; }
 .education-item a {
@@ -558,8 +557,8 @@ p {
   margin: -2px 0;
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
   line-height: 1.4;
+  font-size: var(--font-size-base);
 }
 @media (min-width: 600px) {
   .education-item a { min-height: unset; padding: 0; margin: 0; }
