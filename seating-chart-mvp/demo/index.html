@@ -131,12 +131,13 @@
   .canvas-wrap {
     flex: 1;
     position: relative;
-    overflow: hidden;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
     background-image: radial-gradient(circle, var(--dot) 1.4px, transparent 1.4px);
     background-size: 24px 24px;
     background-color: var(--bg);
   }
-  #canvas { position: absolute; inset: 0; }
+  #canvas { position: relative; width: 1040px; height: 640px; min-width: 100%; min-height: 100%; }
 
   /* ---------- Table ---------- */
   .table {
@@ -239,6 +240,7 @@
     width: 20px;
     height: 20px;
     border-radius: 50%;
+    touch-action: none;
     background: var(--accent);
     display: flex;
     align-items: center;
@@ -292,6 +294,8 @@
     background: var(--surface-2);
     font-size: 0.83rem;
     cursor: grab;
+    touch-action: none;
+    user-select: none;
   }
   .guest-card:active { cursor: grabbing; }
   .guest-card.dragging { opacity: 0.4; }
@@ -338,7 +342,101 @@
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  /* ---------- Mobile: guest list becomes a slide-in drawer ---------- */
+  .drawer-close { display: none; }
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 16, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 30;
+  }
+  .backdrop.show { opacity: 1; pointer-events: auto; }
+
+  .fab {
+    display: none;
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 35;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1rem;
+    border: none;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+  }
+  .fab .fab-count {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Drag ghost that follows the pointer for touch-friendly guest dragging */
+  .drag-ghost {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 60;
+    filter: drop-shadow(0 4px 10px rgba(20, 24, 33, 0.35));
+    transform: translate(-50%, -50%);
+  }
+  .drag-ghost svg { width: 100%; height: 100%; display: block; }
+
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  @media (max-width: 780px) {
+    header .hint { display: none; }
+    header { padding: 0.7rem 1rem; }
+
+    aside {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(88vw, 320px);
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      z-index: 40;
+    }
+    aside.open { transform: translateX(0); }
+    .drawer-close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: var(--surface-2);
+      color: var(--ink-dim);
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    aside .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
+
+    .fab { display: flex; }
+
+    .guest-card { padding: 0.55rem 0.6rem; }
+    .table-caption { font-size: 0.72rem; }
+  }
+
+  @media (max-width: 420px) {
+    header h1 { font-size: 0.95rem; }
+    .fab span:not(.fab-count) { display: none; }
+  }
 </style>
 
 <div class="app">
@@ -355,10 +453,13 @@
     <div class="canvas-wrap">
       <div id="canvas"></div>
     </div>
-    <aside>
+    <aside id="sidebar">
       <div class="head">
-        <h2>Invitados sin mesa</h2>
-        <div class="count" id="guest-count">0</div>
+        <div>
+          <h2>Invitados sin mesa</h2>
+          <div class="count" id="guest-count">0</div>
+        </div>
+        <button class="drawer-close" id="drawer-close" type="button" aria-label="Cerrar">✕</button>
       </div>
       <input class="search" id="search" type="text" placeholder="Buscar invitado…" />
       <div id="guest-list"></div>
@@ -369,6 +470,11 @@
     </aside>
   </div>
 </div>
+<div class="backdrop" id="backdrop"></div>
+<button class="fab" id="fab" type="button">
+  <span>Invitados</span>
+  <span class="fab-count" id="fab-count">0</span>
+</button>
 <div id="toast"></div>
 
 <script>
@@ -608,7 +714,6 @@
       const rot = document.createElement("div");
       rot.className = "handle rotate-handle";
       rot.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M4 12a8 8 0 1 1 2.5 5.8M4 12v5h5"/></svg>';
-      rot.addEventListener("pointerdown", (e) => startRotate(e, table));
       body.appendChild(rot);
 
       const scaleHandle = document.createElement("div");
@@ -616,13 +721,18 @@
       scaleHandle.style.right = "-10px";
       scaleHandle.style.bottom = "-10px";
       scaleHandle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M6 18 18 6M12 18h6v-6"/></svg>';
-      scaleHandle.addEventListener("pointerdown", (e) => startScale(e, table));
       body.appendChild(scaleHandle);
 
       el.appendChild(frame);
       el.addEventListener("pointerdown", (e) => startDrag(e, table));
       el.addEventListener("click", (e) => { e.stopPropagation(); selectedTableId = table.id; renderTables(); });
       canvas.appendChild(el);
+
+      // Handles need the *on-screen* center, not table.x/y, so rotate/scale stay
+      // correct regardless of canvas scroll position (relevant once the canvas
+      // becomes horizontally scrollable on small screens).
+      rot.addEventListener("pointerdown", (e) => startRotate(e, table, el));
+      scaleHandle.addEventListener("pointerdown", (e) => startScale(e, table, el));
     }
   }
 
@@ -655,11 +765,21 @@
     window.addEventListener("pointerup", up);
   }
 
-  function startRotate(e, table) {
+  // Rotate/scale pivot around the table's own on-screen center. Reading it
+  // from getBoundingClientRect (rather than table.x/y) keeps the math correct
+  // no matter how the canvas is scrolled or offset — important on small
+  // screens where the canvas pans horizontally.
+  function screenCenter(el) {
+    const r = el.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  function startRotate(e, table, el) {
     e.stopPropagation();
     e.preventDefault();
+    const center = screenCenter(el);
     function angleFromCenter(ev) {
-      const dx = ev.clientX - table.x, dy = ev.clientY - table.y;
+      const dx = ev.clientX - center.x, dy = ev.clientY - center.y;
       return (Math.atan2(dy, dx) * 180) / Math.PI + 90;
     }
     function move(ev) {
@@ -675,13 +795,14 @@
     window.addEventListener("pointerup", up);
   }
 
-  function startScale(e, table) {
+  function startScale(e, table, el) {
     e.stopPropagation();
     e.preventDefault();
-    const startDist = Math.hypot(e.clientX - table.x, e.clientY - table.y);
+    const center = screenCenter(el);
+    const startDist = Math.hypot(e.clientX - center.x, e.clientY - center.y);
     const origScale = table.scale;
     function move(ev) {
-      const dist = Math.hypot(ev.clientX - table.x, ev.clientY - table.y);
+      const dist = Math.hypot(ev.clientX - center.x, ev.clientY - center.y);
       table.scale = Math.max(0.5, Math.min(2, origScale * (dist / startDist)));
       renderTables();
     }
@@ -703,6 +824,7 @@
       .filter((g) => g.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
     guestCount.textContent = unassigned.length;
+    document.getElementById("fab-count").textContent = unassigned.length;
     guestList.innerHTML = "";
 
     if (unassigned.length === 0) {
@@ -716,15 +838,8 @@
     for (const guest of unassigned) {
       const card = document.createElement("div");
       card.className = "guest-card";
-      card.draggable = true;
       card.dataset.id = guest.id;
-
-      card.addEventListener("dragstart", (e) => {
-        e.dataTransfer.setData("text/guest-id", guest.id);
-        e.dataTransfer.effectAllowed = "move";
-        card.classList.add("dragging");
-      });
-      card.addEventListener("dragend", () => card.classList.remove("dragging"));
+      card.addEventListener("pointerdown", (e) => startGuestDrag(e, guest, card));
 
       const avatar = document.createElement("div");
       avatar.className = "guest-avatar";
@@ -754,29 +869,82 @@
   });
 
   const canvasWrap = document.querySelector(".canvas-wrap");
-  canvasWrap.addEventListener("dragover", (e) => {
+
+  // ---------------------------------------------------------------
+  // Pointer-based drag for guest cards (works on touch, unlike HTML5 DnD,
+  // which has no native touch support on mobile browsers).
+  // ---------------------------------------------------------------
+  function startGuestDrag(e, guest, card) {
     e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-  });
-  canvasWrap.addEventListener("drop", (e) => {
-    e.preventDefault();
-    const guestId = e.dataTransfer.getData("text/guest-id");
-    if (!guestId) return;
-    const rect = canvasWrap.getBoundingClientRect();
-    const point = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    const target = findNearestEmptySeat(tables, guests, point, 46);
-    const guest = guests.find((g) => g.id === guestId);
-    if (target && guest) {
-      guest.tableId = target.tableId;
-      guest.seatNumber = target.seatNumber;
-      const table = tables.find((t) => t.id === target.tableId);
-      toast(`${guest.name} sentado en ${table.label}, silla ${target.seatNumber + 1}`);
-      renderTables();
-      renderGuests();
-    } else {
-      toast("Suelta el invitado más cerca de una silla libre");
+    card.classList.add("dragging");
+
+    const ghost = document.createElement("div");
+    ghost.className = "drag-ghost";
+    ghost.innerHTML = avatarSVG(guest.id);
+    ghost.style.left = e.clientX + "px";
+    ghost.style.top = e.clientY + "px";
+    document.body.appendChild(ghost);
+
+    function move(ev) {
+      ghost.style.left = ev.clientX + "px";
+      ghost.style.top = ev.clientY + "px";
     }
-  });
+
+    function up(ev) {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      ghost.remove();
+      card.classList.remove("dragging");
+
+      const wrapRect = canvasWrap.getBoundingClientRect();
+      const overCanvas =
+        ev.clientX >= wrapRect.left && ev.clientX <= wrapRect.right &&
+        ev.clientY >= wrapRect.top && ev.clientY <= wrapRect.bottom;
+      if (!overCanvas) return;
+
+      // Map viewport coords -> #canvas content coords (accounts for scroll,
+      // relevant now that the canvas pans horizontally on small screens).
+      const point = {
+        x: ev.clientX - wrapRect.left + canvasWrap.scrollLeft,
+        y: ev.clientY - wrapRect.top + canvasWrap.scrollTop,
+      };
+      const target = findNearestEmptySeat(tables, guests, point, 46);
+      if (target) {
+        guest.tableId = target.tableId;
+        guest.seatNumber = target.seatNumber;
+        const table = tables.find((t) => t.id === target.tableId);
+        toast(`${guest.name} sentado en ${table.label}, silla ${target.seatNumber + 1}`);
+        renderTables();
+        renderGuests();
+        closeDrawer();
+      } else {
+        toast("Suelta el invitado más cerca de una silla libre");
+      }
+    }
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  }
+
+  // ---------------------------------------------------------------
+  // Mobile drawer: the guest sidebar slides in over the canvas instead
+  // of sharing the row, since there isn't room for both on a phone.
+  // ---------------------------------------------------------------
+  const sidebar = document.getElementById("sidebar");
+  const backdrop = document.getElementById("backdrop");
+  const fab = document.getElementById("fab");
+
+  function openDrawer() {
+    sidebar.classList.add("open");
+    backdrop.classList.add("show");
+  }
+  function closeDrawer() {
+    sidebar.classList.remove("open");
+    backdrop.classList.remove("show");
+  }
+  fab.addEventListener("click", openDrawer);
+  backdrop.addEventListener("click", closeDrawer);
+  document.getElementById("drawer-close").addEventListener("click", closeDrawer);
 
   function unseatGuest(guestId) {
     const guest = guests.find((g) => g.id === guestId);
