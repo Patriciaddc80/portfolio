@@ -70,6 +70,57 @@
     padding: 0.2rem 0.55rem;
   }
   header .spacer { flex: 1; }
+
+  .toolbar { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .toolbar-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .toolbar-btn.icon-only { padding: 0.4rem 0.55rem; }
+
+  .add-element-wrap { position: relative; }
+  .add-element-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 45;
+    min-width: 190px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 0.35rem;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  .add-element-menu.show { display: flex; }
+  .add-element-menu button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.55rem;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--ink);
+    font-size: 0.8rem;
+    text-align: left;
+    cursor: pointer;
+  }
+  .add-element-menu button:hover { background: var(--surface-2); }
+
   header .hint {
     font-size: 0.76rem;
     color: var(--ink-dim);
@@ -722,10 +773,29 @@
   <header>
     <h1>Plano de Mesas</h1>
     <span class="tag">Demo</span>
+
+    <div class="toolbar">
+      <div class="add-element-wrap">
+        <button id="add-element-btn" class="toolbar-btn" type="button">+ Elemento</button>
+        <div class="add-element-menu" id="add-element-menu">
+          <button type="button" data-decor="dance">💃 Pista de baile</button>
+          <button type="button" data-decor="stage">🎤 Escenario</button>
+          <button type="button" data-decor="dj">🎧 Cabina DJ</button>
+          <button type="button" data-decor="arch">⛪ Arco / Altar</button>
+          <button type="button" data-decor="gift">🎁 Mesa de regalos</button>
+          <button type="button" data-decor="cake">🎂 Pastel</button>
+          <button type="button" data-wall="1">▭ Muro</button>
+        </div>
+      </div>
+      <button id="export-kitchen-btn" class="toolbar-btn" type="button">🍽️ PDF cocina</button>
+      <button id="export-cards-btn" class="toolbar-btn" type="button">🎫 Tarjetas</button>
+      <button id="scope-info-btn" class="toolbar-btn icon-only" type="button" title="Alcance de este prototipo">ℹ️</button>
+    </div>
+
     <div class="spacer"></div>
     <div class="hint">
       Arrastra una mesa para moverla · asa azul superior para <b>rotar</b>, esquina para <b>escalar</b> ·
-      selecciona una mesa para ver los presets de nº de sillas · arrastra un invitado hasta una silla vacía.
+      selecciona una mesa para ver los presets de nº de sillas · arrastra un invitado hasta una silla vacía o haz clic en una silla libre.
     </div>
   </header>
   <div class="body">
