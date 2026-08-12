@@ -1,0 +1,737 @@
+<!doctype html>
+<title>Plano de Mesas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --bg: #faf6ef;
+    --surface: #ffffff;
+    --surface-2: #f3ede1;
+    --ink: #2b2420;
+    --ink-dim: #6b6154;
+    --line: #e6ddcb;
+    --accent: #8a2c3b;
+    --accent-ink: #ffffff;
+    --gold: #ad8a3f;
+    --gold-soft: #ecdfbe;
+    --seat-empty: #ffffff;
+    --seat-empty-line: #c9bda3;
+    --seat-occupied: #ecdfbe;
+    --seat-occupied-line: #ad8a3f;
+    --danger: #a4432f;
+    --diet-vegan: #5c7a4f;
+    --diet-vegan-bg: #e4ebdd;
+    --diet-gf: #3f7a72;
+    --diet-gf-bg: #dcecea;
+    --diet-veg: #8a6d2f;
+    --diet-veg-bg: #ede2c6;
+    --diet-other: #6b6154;
+    --diet-other-bg: #ece7dc;
+    --shadow: 0 1px 2px rgba(43, 36, 32, 0.06), 0 8px 24px -12px rgba(43, 36, 32, 0.18);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1c1815;
+      --surface: #262019;
+      --surface-2: #2e2720;
+      --ink: #f1ebdf;
+      --ink-dim: #a89c8a;
+      --line: #3d352b;
+      --accent: #e6a0ac;
+      --accent-ink: #2b1015;
+      --gold: #d9b567;
+      --gold-soft: #3a331f;
+      --seat-empty: #302921;
+      --seat-empty-line: #4c4232;
+      --seat-occupied: #3a331f;
+      --seat-occupied-line: #d9b567;
+      --danger: #e08469;
+      --diet-vegan: #a3c98f;
+      --diet-vegan-bg: #2b3324;
+      --diet-gf: #8fcac0;
+      --diet-gf-bg: #1f3330;
+      --diet-veg: #d9c184;
+      --diet-veg-bg: #332c1c;
+      --diet-other: #b8ac99;
+      --diet-other-bg: #302a22;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1c1815;
+    --surface: #262019;
+    --surface-2: #2e2720;
+    --ink: #f1ebdf;
+    --ink-dim: #a89c8a;
+    --line: #3d352b;
+    --accent: #e6a0ac;
+    --accent-ink: #2b1015;
+    --gold: #d9b567;
+    --gold-soft: #3a331f;
+    --seat-empty: #302921;
+    --seat-empty-line: #4c4232;
+    --seat-occupied: #3a331f;
+    --seat-occupied-line: #d9b567;
+    --danger: #e08469;
+    --diet-vegan: #a3c98f;
+    --diet-vegan-bg: #2b3324;
+    --diet-gf: #8fcac0;
+    --diet-gf-bg: #1f3330;
+    --diet-veg: #d9c184;
+    --diet-veg-bg: #332c1c;
+    --diet-other: #b8ac99;
+    --diet-other-bg: #302a22;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { overflow: hidden; }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+    flex-wrap: wrap;
+  }
+  header h1 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    margin: 0;
+  }
+  header .tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 999px;
+    padding: 0.15rem 0.55rem;
+  }
+  header .spacer { flex: 1; }
+  header .hint {
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+    max-width: 34rem;
+    text-align: right;
+    line-height: 1.4;
+  }
+  header .hint b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- Layout ---------- */
+  .body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+  }
+
+  .canvas-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 0) 0 0/28px 28px,
+      var(--bg);
+  }
+  #canvas {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* ---------- Table ---------- */
+  .table {
+    position: absolute;
+    left: 0;
+    top: 0;
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+  }
+  .table:active { cursor: grabbing; }
+  .table-body {
+    position: relative;
+    background: var(--surface);
+    border: 2px solid var(--gold-soft);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 0.35rem;
+  }
+  .table.selected .table-body { border-color: var(--accent); }
+  .table.round .table-body { border-radius: 50%; }
+  .table.rect .table-body { border-radius: 10px; }
+  .table-label {
+    font-family: Georgia, "Iowan Old Style", serif;
+    font-size: 0.72rem;
+    color: var(--ink-dim);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .seat {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    margin: -13px 0 0 -13px;
+    border-radius: 50%;
+    background: var(--seat-empty);
+    border: 1.5px solid var(--seat-empty-line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--ink-dim);
+    cursor: default;
+    transition: transform 0.12s ease, border-color 0.12s ease;
+  }
+  .seat.occupied {
+    background: var(--seat-occupied);
+    border-color: var(--seat-occupied-line);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .seat.occupied:hover { transform: scale(1.12); }
+  .seat.target {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+
+  /* handles */
+  .handle {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1.5px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  .handle svg { width: 10px; height: 10px; stroke: var(--accent); }
+  .rotate-handle { top: -34px; left: 50%; margin-left: -9px; }
+  .scale-handle { cursor: nwse-resize; }
+  .table:not(.selected) .handle { display: none; }
+
+  /* ---------- Sidebar ---------- */
+  aside {
+    width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border-left: 1px solid var(--line);
+  }
+  aside .head {
+    padding: 1rem 1rem 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+  aside .head h2 {
+    margin: 0 0 0.15rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+  }
+  aside .head .count {
+    font-family: Georgia, serif;
+    font-size: 1.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+  aside .search {
+    margin: 0.6rem 0.9rem;
+    padding: 0.4rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface-2);
+    font-size: 0.82rem;
+    color: var(--ink);
+  }
+  aside .search:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  #guest-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.4rem 0.7rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .guest-card {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--surface-2);
+    font-size: 0.83rem;
+    cursor: grab;
+  }
+  .guest-card:active { cursor: grabbing; }
+  .guest-card.dragging { opacity: 0.4; }
+  .guest-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--gold-soft);
+    color: var(--gold);
+    font-size: 0.68rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .guest-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .diet-chip {
+    font-size: 0.62rem;
+    font-weight: 600;
+    padding: 0.12rem 0.45rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .diet-vegan { color: var(--diet-vegan); background: var(--diet-vegan-bg); }
+  .diet-gluten_free { color: var(--diet-gf); background: var(--diet-gf-bg); }
+  .diet-vegetarian { color: var(--diet-veg); background: var(--diet-veg-bg); }
+  .diet-other { color: var(--diet-other); background: var(--diet-other-bg); }
+
+  .empty-note {
+    text-align: center;
+    color: var(--ink-dim);
+    font-size: 0.8rem;
+    padding: 2rem 1rem;
+  }
+
+  aside .legend {
+    padding: 0.7rem 1rem 0.9rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.7rem;
+    color: var(--ink-dim);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  aside .legend .row { display: flex; align-items: center; gap: 0.4rem; }
+  aside .legend .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .dot.empty { background: var(--seat-empty); border: 1.5px solid var(--seat-empty-line); }
+  .dot.occ { background: var(--seat-occupied); border: 1.5px solid var(--seat-occupied-line); }
+
+  /* toast */
+  #toast {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 50;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="app">
+  <header>
+    <h1>Plano de Mesas</h1>
+    <span class="tag">Demo</span>
+    <div class="spacer"></div>
+    <div class="hint">
+      Arrastra una mesa para moverla · usa el asa dorada para <b>rotarla</b> y la esquina para <b>escalarla</b> ·
+      arrastra un invitado de la derecha hasta una silla vacía.
+    </div>
+  </header>
+  <div class="body">
+    <div class="canvas-wrap">
+      <div id="canvas"></div>
+    </div>
+    <aside>
+      <div class="head">
+        <h2>Invitados sin mesa</h2>
+        <div class="count" id="guest-count">0</div>
+      </div>
+      <input class="search" id="search" type="text" placeholder="Buscar invitado…" />
+      <div id="guest-list"></div>
+      <div class="legend">
+        <div class="row"><span class="dot empty"></span> Silla libre</div>
+        <div class="row"><span class="dot occ"></span> Silla ocupada</div>
+      </div>
+    </aside>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------------------------------------------------------------
+  // Geometry helpers — mirrors src/lib/seatLayout.js from the MVP source
+  // ---------------------------------------------------------------
+  const CHAIR_OFFSET = 26;
+
+  function getChairPositions(table) {
+    const { type, targetChairs, width, height } = table;
+    const seats = [];
+    if (type === "round") {
+      const radius = Math.max(width, height) / 2 + CHAIR_OFFSET;
+      const step = (2 * Math.PI) / targetChairs;
+      for (let i = 0; i < targetChairs; i++) {
+        const angle = i * step - Math.PI / 2;
+        seats.push({ seatNumber: i, x: Math.cos(angle) * radius, y: Math.sin(angle) * radius });
+      }
+      return seats;
+    }
+    const perLong = Math.ceil(targetChairs / 2);
+    const halfW = width / 2, halfH = height / 2;
+    let n = 0;
+    for (let side = 0; side < 2 && n < targetChairs; side++) {
+      const y = side === 0 ? -halfH - CHAIR_OFFSET : halfH + CHAIR_OFFSET;
+      const count = Math.min(perLong, targetChairs - n);
+      for (let i = 0; i < count; i++) {
+        const spacing = width / (count + 1);
+        seats.push({ seatNumber: n, x: -halfW + spacing * (i + 1), y });
+        n++;
+      }
+    }
+    return seats;
+  }
+
+  function localToWorld(table, point) {
+    const rad = (table.rotation * Math.PI) / 180;
+    const s = table.scale;
+    const x = point.x * s, y = point.y * s;
+    return {
+      x: table.x + x * Math.cos(rad) - y * Math.sin(rad),
+      y: table.y + x * Math.sin(rad) + y * Math.cos(rad),
+    };
+  }
+
+  function findNearestEmptySeat(tables, guests, point, maxDist) {
+    let best = null, bestDist = maxDist;
+    for (const table of tables) {
+      for (const seat of getChairPositions(table)) {
+        const occupied = guests.some((g) => g.tableId === table.id && g.seatNumber === seat.seatNumber);
+        if (occupied) continue;
+        const world = localToWorld(table, seat);
+        const d = Math.hypot(world.x - point.x, world.y - point.y);
+        if (d < bestDist) { bestDist = d; best = { tableId: table.id, seatNumber: seat.seatNumber }; }
+      }
+    }
+    return best;
+  }
+
+  // ---------------------------------------------------------------
+  // Demo data
+  // ---------------------------------------------------------------
+  const tables = [
+    { id: "t1", type: "round", label: "Mesa 1 — Familia", targetChairs: 8, width: 130, height: 130, x: 230, y: 160, rotation: 0, scale: 1 },
+    { id: "t2", type: "round", label: "Mesa 2 — Amigos", targetChairs: 8, width: 130, height: 130, x: 560, y: 160, rotation: 0, scale: 1 },
+    { id: "t3", type: "rect", label: "Mesa Presidencial", targetChairs: 6, width: 220, height: 90, x: 400, y: 400, rotation: 0, scale: 1 },
+    { id: "t4", type: "round", label: "Mesa 4", targetChairs: 6, width: 110, height: 110, x: 760, y: 400, rotation: 18, scale: 1 },
+  ];
+
+  const DIET_LABEL = { none: "", vegan: "Vegano", vegetarian: "Vegetariano", gluten_free: "Sin gluten", other: "Alergias" };
+
+  let guests = [
+    { id: "g1", name: "Lucía Fernández", tableId: "t1", seatNumber: 0, diet: "none" },
+    { id: "g2", name: "Marcos Ibáñez", tableId: "t1", seatNumber: 1, diet: "vegan" },
+    { id: "g3", name: "Elena Ruiz", tableId: "t1", seatNumber: 2, diet: "none" },
+    { id: "g4", name: "Diego Torres", tableId: "t3", seatNumber: 0, diet: "gluten_free" },
+    { id: "g5", name: "Sofía Navarro", tableId: "t3", seatNumber: 1, diet: "none" },
+    { id: "g6", name: "Pablo Serrano", tableId: null, seatNumber: null, diet: "none" },
+    { id: "g7", name: "Carmen Vidal", tableId: null, seatNumber: null, diet: "vegetarian" },
+    { id: "g8", name: "Álvaro Molina", tableId: null, seatNumber: null, diet: "none" },
+    { id: "g9", name: "Nuria Campos", tableId: null, seatNumber: null, diet: "gluten_free" },
+    { id: "g10", name: "Héctor Guzmán", tableId: null, seatNumber: null, diet: "none" },
+    { id: "g11", name: "Beatriz Soler", tableId: null, seatNumber: null, diet: "other" },
+    { id: "g12", name: "Iván Cabrera", tableId: null, seatNumber: null, diet: "none" },
+    { id: "g13", name: "Rocío Delgado", tableId: null, seatNumber: null, diet: "vegan" },
+    { id: "g14", name: "Tomás Pardo", tableId: null, seatNumber: null, diet: "none" },
+  ];
+
+  const canvas = document.getElementById("canvas");
+  const guestList = document.getElementById("guest-list");
+  const guestCount = document.getElementById("guest-count");
+  const searchInput = document.getElementById("search");
+  const toastEl = document.getElementById("toast");
+
+  let selectedTableId = null;
+  let searchQuery = "";
+  let toastTimer = null;
+
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1600);
+  }
+
+  function initials(name) {
+    return name.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]).join("").toUpperCase();
+  }
+
+  // ---------------------------------------------------------------
+  // Render: tables + chairs
+  // ---------------------------------------------------------------
+  function renderTables() {
+    canvas.innerHTML = "";
+    for (const table of tables) {
+      const el = document.createElement("div");
+      el.className = "table " + (table.type === "round" ? "round" : "rect") + (table.id === selectedTableId ? " selected" : "");
+      el.style.left = table.x + "px";
+      el.style.top = table.y + "px";
+      el.dataset.id = table.id;
+
+      const body = document.createElement("div");
+      body.className = "table-body";
+      body.style.width = table.width + "px";
+      body.style.height = table.height + "px";
+      body.style.transform = `translate(-50%, -50%) rotate(${table.rotation}deg) scale(${table.scale})`;
+
+      const label = document.createElement("span");
+      label.className = "table-label";
+      label.textContent = table.label;
+      body.appendChild(label);
+
+      // Seats — positioned in the *rotated/scaled* local frame, matching seatLayout math.
+      for (const seat of getChairPositions(table)) {
+        const occupant = guests.find((g) => g.tableId === table.id && g.seatNumber === seat.seatNumber);
+        const seatEl = document.createElement("div");
+        seatEl.className = "seat" + (occupant ? " occupied" : "");
+        seatEl.style.left = table.width / 2 + seat.x + "px";
+        seatEl.style.top = table.height / 2 + seat.y + "px";
+        seatEl.dataset.table = table.id;
+        seatEl.dataset.seat = seat.seatNumber;
+        if (occupant) {
+          seatEl.textContent = initials(occupant.name);
+          seatEl.title = occupant.name + " — clic para quitar de la mesa";
+          seatEl.addEventListener("click", (e) => {
+            e.stopPropagation();
+            unseatGuest(occupant.id);
+          });
+        }
+        body.appendChild(seatEl);
+      }
+
+      // Rotate handle
+      const rot = document.createElement("div");
+      rot.className = "handle rotate-handle";
+      rot.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M4 12a8 8 0 1 1 2.5 5.8M4 12v5h5"/></svg>';
+      rot.addEventListener("pointerdown", (e) => startRotate(e, table));
+      body.appendChild(rot);
+
+      // Scale handle (bottom-right corner of the bounding box)
+      const scaleHandle = document.createElement("div");
+      scaleHandle.className = "handle scale-handle";
+      scaleHandle.style.right = "-9px";
+      scaleHandle.style.bottom = "-9px";
+      scaleHandle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M6 18 18 6M12 18h6v-6"/></svg>';
+      scaleHandle.addEventListener("pointerdown", (e) => startScale(e, table));
+      body.appendChild(scaleHandle);
+
+      el.appendChild(body);
+      el.addEventListener("pointerdown", (e) => startDrag(e, table));
+      el.addEventListener("click", (e) => { e.stopPropagation(); selectedTableId = table.id; renderTables(); });
+      canvas.appendChild(el);
+    }
+  }
+
+  canvas.addEventListener("pointerdown", (e) => {
+    if (e.target === canvas) { selectedTableId = null; renderTables(); }
+  });
+
+  // ---------------------------------------------------------------
+  // Drag / rotate / scale — pointer-event based (no external library)
+  // ---------------------------------------------------------------
+  function startDrag(e, table) {
+    if (e.target.closest(".handle")) return;
+    e.stopPropagation();
+    selectedTableId = table.id;
+    const startX = e.clientX, startY = e.clientY;
+    const origX = table.x, origY = table.y;
+    renderTables();
+
+    function move(ev) {
+      table.x = origX + (ev.clientX - startX);
+      table.y = origY + (ev.clientY - startY);
+      renderTables();
+    }
+    function up() {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      toast(`${table.label}: posición actualizada (x:${Math.round(table.x)}, y:${Math.round(table.y)})`);
+    }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  }
+
+  function startRotate(e, table) {
+    e.stopPropagation();
+    e.preventDefault();
+    function angleFromCenter(ev) {
+      const dx = ev.clientX - table.x, dy = ev.clientY - table.y;
+      return (Math.atan2(dy, dx) * 180) / Math.PI + 90;
+    }
+    function move(ev) {
+      table.rotation = Math.round(angleFromCenter(ev));
+      renderTables();
+    }
+    function up() {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      toast(`${table.label}: rotación ${table.rotation}°`);
+    }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  }
+
+  function startScale(e, table) {
+    e.stopPropagation();
+    e.preventDefault();
+    const startDist = Math.hypot(e.clientX - table.x, e.clientY - table.y);
+    const origScale = table.scale;
+    function move(ev) {
+      const dist = Math.hypot(ev.clientX - table.x, ev.clientY - table.y);
+      table.scale = Math.max(0.5, Math.min(2, origScale * (dist / startDist)));
+      renderTables();
+    }
+    function up() {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      toast(`${table.label}: escala ${table.scale.toFixed(2)}×`);
+    }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  }
+
+  // ---------------------------------------------------------------
+  // Guest sidebar + native HTML5 drag-and-drop onto the canvas
+  // ---------------------------------------------------------------
+  function renderGuests() {
+    const unassigned = guests
+      .filter((g) => !g.tableId)
+      .filter((g) => g.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    guestCount.textContent = unassigned.length;
+    guestList.innerHTML = "";
+
+    if (unassigned.length === 0) {
+      const note = document.createElement("div");
+      note.className = "empty-note";
+      note.textContent = guests.some((g) => !g.tableId) ? "Sin resultados." : "Todos los invitados tienen mesa asignada.";
+      guestList.appendChild(note);
+      return;
+    }
+
+    for (const guest of unassigned) {
+      const card = document.createElement("div");
+      card.className = "guest-card";
+      card.draggable = true;
+      card.dataset.id = guest.id;
+
+      card.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/guest-id", guest.id);
+        e.dataTransfer.effectAllowed = "move";
+        card.classList.add("dragging");
+      });
+      card.addEventListener("dragend", () => card.classList.remove("dragging"));
+
+      const avatar = document.createElement("div");
+      avatar.className = "guest-avatar";
+      avatar.textContent = initials(guest.name);
+
+      const name = document.createElement("div");
+      name.className = "guest-name";
+      name.textContent = guest.name;
+
+      card.appendChild(avatar);
+      card.appendChild(name);
+
+      if (guest.diet !== "none") {
+        const chip = document.createElement("span");
+        chip.className = "diet-chip diet-" + guest.diet;
+        chip.textContent = DIET_LABEL[guest.diet];
+        card.appendChild(chip);
+      }
+
+      guestList.appendChild(card);
+    }
+  }
+
+  searchInput.addEventListener("input", (e) => {
+    searchQuery = e.target.value;
+    renderGuests();
+  });
+
+  const canvasWrap = document.querySelector(".canvas-wrap");
+  canvasWrap.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  });
+  canvasWrap.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const guestId = e.dataTransfer.getData("text/guest-id");
+    if (!guestId) return;
+    const rect = canvasWrap.getBoundingClientRect();
+    const point = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    const target = findNearestEmptySeat(tables, guests, point, 46);
+    const guest = guests.find((g) => g.id === guestId);
+    if (target && guest) {
+      guest.tableId = target.tableId;
+      guest.seatNumber = target.seatNumber;
+      const table = tables.find((t) => t.id === target.tableId);
+      toast(`${guest.name} sentado en ${table.label}, silla ${target.seatNumber + 1}`);
+      renderTables();
+      renderGuests();
+    } else {
+      toast("Suelta el invitado más cerca de una silla libre");
+    }
+  });
+
+  function unseatGuest(guestId) {
+    const guest = guests.find((g) => g.id === guestId);
+    if (!guest) return;
+    guest.tableId = null;
+    guest.seatNumber = null;
+    toast(`${guest.name} quitado de la mesa`);
+    renderTables();
+    renderGuests();
+  }
+
+  renderTables();
+  renderGuests();
+})();
+</script>
