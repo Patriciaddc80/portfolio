@@ -106,6 +106,11 @@
   .table-frame { position: relative; }
   .table-body {
     position: relative;
+    /* Above .seat/.preset (frame siblings, z-index:auto) so its rotate/scale/
+       edit handles stay clickable even when a chair's angle happens to land
+       right on top of a handle — e.g. any 8-seat round table puts a chair
+       at exactly -45/-90/-135°, the same spots as the corner/top handles. */
+    z-index: 2;
     background: var(--surface);
     border: 1.5px solid var(--line);
     box-shadow: var(--shadow);
@@ -153,6 +158,7 @@
   /* Guest seat = an illustrated head-and-shoulders avatar sitting at the chair spot */
   .seat {
     position: absolute;
+    z-index: 1;
     width: 34px;
     height: 34px;
     margin: -17px 0 0 -17px;
@@ -650,9 +656,14 @@
     const rad = (table.rotation * Math.PI) / 180;
     const s = table.scale;
     const x = point.x * s, y = point.y * s;
+    // table.x/y is the table box's top-left corner (how it's actually
+    // positioned in the DOM); rotation/scale pivot around its center,
+    // which is the fixed CSS transform-origin regardless of scale.
+    const centerX = table.x + table.width / 2;
+    const centerY = table.y + table.height / 2;
     return {
-      x: table.x + x * Math.cos(rad) - y * Math.sin(rad),
-      y: table.y + x * Math.sin(rad) + y * Math.cos(rad),
+      x: centerX + x * Math.cos(rad) - y * Math.sin(rad),
+      y: centerY + x * Math.sin(rad) + y * Math.cos(rad),
     };
   }
 
