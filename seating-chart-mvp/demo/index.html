@@ -1095,7 +1095,7 @@
           const dirX = Math.cos((angleDeg * Math.PI) / 180);
           const dirY = Math.sin((angleDeg * Math.PI) / 180);
           const flip = angleDeg > 90 || angleDeg < -90;
-          const labelStart = 20;
+          const labelStart = 19; // ~2px past the 17px avatar radius: touching, not floating
           const lx = cx + dirX * labelStart;
           const ly = cy + dirY * labelStart;
 
@@ -1105,7 +1105,12 @@
           label.style.top = ly + "px";
           label.style.transform = `rotate(${flip ? angleDeg + 180 : angleDeg}deg) ${flip ? "translateX(-100%)" : ""} rotate(${-table.rotation}deg)`;
           label.style.transformOrigin = flip ? "100% 50%" : "0 50%";
-          label.textContent = firstName(occupant.name) + (lastName(occupant.name) ? " " + lastName(occupant.name) : "");
+          // Keep the label short (first name + last initial) so it stays
+          // right against its avatar instead of stretching far away on
+          // small tables — the full name is still on the seat's tooltip,
+          // the sidebar card, and the guest editor.
+          const last = lastName(occupant.name);
+          label.textContent = firstName(occupant.name) + (last ? " " + last[0] + "." : "");
           frame.appendChild(label);
         } else {
           frame.appendChild(seatEl);
