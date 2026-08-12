@@ -126,8 +126,8 @@
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
     border-radius: inherit;
+    background-repeat: no-repeat;
   }
   .table-number {
     position: relative;
@@ -327,7 +327,8 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: var(--surface-2);
+    background-color: var(--surface-2);
+    background-repeat: no-repeat;
     border: 1.5px dashed var(--line);
     overflow: hidden;
     flex-shrink: 0;
@@ -336,8 +337,8 @@
     justify-content: center;
     color: var(--ink-dim);
     font-size: 0.65rem;
+    text-align: center;
   }
-  .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
   .photo-actions { display: flex; gap: 0.5rem; flex: 1; }
   .photo-btn {
     flex: 1;
@@ -351,6 +352,46 @@
     cursor: pointer;
   }
   .photo-btn.remove { color: var(--danger); }
+
+  .stepper { display: flex; align-items: center; gap: 0.9rem; }
+  .stepper-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    border: 1.5px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .stepper-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .stepper-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .stepper-value { font-size: 1rem; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 1.5rem; text-align: center; }
+
+  .image-adjust { margin-top: 0.75rem; display: none; flex-direction: column; gap: 0.55rem; }
+  .image-adjust.show { display: flex; }
+  .slider-row { display: flex; flex-direction: column; gap: 0.2rem; }
+  .slider-row .field-label { margin-bottom: 0; }
+  .slider-row input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+  .duplicate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.6rem;
+    border-radius: 9px;
+    border: 1.5px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .duplicate-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .duplicate-btn svg { width: 15px; height: 15px; }
 
   /* ---------- Guest editor modal ---------- */
   .editor .note-input {
@@ -748,6 +789,15 @@
     </div>
 
     <div>
+      <label class="field-label">Sillas</label>
+      <div class="stepper">
+        <button class="stepper-btn" id="chairs-minus" type="button" aria-label="Quitar silla">−</button>
+        <span class="stepper-value" id="chairs-value">8</span>
+        <button class="stepper-btn" id="chairs-plus" type="button" aria-label="Añadir silla">+</button>
+      </div>
+    </div>
+
+    <div>
       <label class="field-label">Imagen de fondo</label>
       <div class="photo-row">
         <div class="photo-preview" id="editor-photo-preview">Sin foto</div>
@@ -757,7 +807,28 @@
         </div>
       </div>
       <input type="file" id="editor-photo-input" accept="image/*" style="display:none" />
+
+      <div id="image-adjust" class="image-adjust">
+        <div class="slider-row">
+          <label class="field-label" for="editor-image-zoom">Zoom</label>
+          <input type="range" id="editor-image-zoom" min="100" max="300" step="5" />
+        </div>
+        <div class="slider-row">
+          <label class="field-label" for="editor-image-x">Posición horizontal</label>
+          <input type="range" id="editor-image-x" min="0" max="100" step="1" />
+        </div>
+        <div class="slider-row">
+          <label class="field-label" for="editor-image-y">Posición vertical</label>
+          <input type="range" id="editor-image-y" min="0" max="100" step="1" />
+        </div>
+        <button class="photo-btn" id="editor-image-reset" type="button">Restablecer ajuste</button>
+      </div>
     </div>
+
+    <button class="duplicate-btn" id="editor-duplicate" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+      Duplicar mesa
+    </button>
   </div>
 </div>
 
@@ -979,10 +1050,11 @@
       body.style.width = table.width + "px";
       body.style.height = table.height + "px";
       if (table.image) {
-        const photo = document.createElement("img");
+        const photo = document.createElement("div");
         photo.className = "table-photo";
-        photo.src = table.image;
-        photo.alt = "";
+        photo.style.backgroundImage = `url(${table.image})`;
+        photo.style.backgroundSize = `${table.imageZoom || 100}%`;
+        photo.style.backgroundPosition = `${table.imageOffsetX ?? 50}% ${table.imageOffsetY ?? 50}%`;
         body.appendChild(photo);
       } else if (table.color) {
         body.style.background = table.color;
@@ -1423,7 +1495,17 @@
   const swatchesEl = document.getElementById("swatches");
   const photoPreview = document.getElementById("editor-photo-preview");
   const photoInput = document.getElementById("editor-photo-input");
+  const chairsValue = document.getElementById("chairs-value");
+  const chairsMinus = document.getElementById("chairs-minus");
+  const chairsPlus = document.getElementById("chairs-plus");
+  const imageAdjust = document.getElementById("image-adjust");
+  const imageZoomSlider = document.getElementById("editor-image-zoom");
+  const imageXSlider = document.getElementById("editor-image-x");
+  const imageYSlider = document.getElementById("editor-image-y");
   let editingTable = null;
+
+  const MIN_CHAIRS = 2;
+  const MAX_CHAIRS = 20;
 
   // Round <-> rectangular defaults, kept sane so switching shape doesn't
   // leave a round table absurdly wide or a rectangle perfectly square.
@@ -1477,9 +1559,24 @@
       sw.classList.toggle("active", !editingTable.image && matches);
     });
 
-    photoPreview.innerHTML = editingTable.image
-      ? `<img src="${editingTable.image}" alt="">`
-      : "Sin foto";
+    chairsValue.textContent = editingTable.targetChairs;
+    chairsMinus.disabled = editingTable.targetChairs <= MIN_CHAIRS;
+    chairsPlus.disabled = editingTable.targetChairs >= MAX_CHAIRS;
+
+    if (editingTable.image) {
+      photoPreview.innerHTML = "";
+      photoPreview.style.backgroundImage = `url(${editingTable.image})`;
+      photoPreview.style.backgroundSize = `${editingTable.imageZoom || 100}%`;
+      photoPreview.style.backgroundPosition = `${editingTable.imageOffsetX ?? 50}% ${editingTable.imageOffsetY ?? 50}%`;
+      imageAdjust.classList.add("show");
+      imageZoomSlider.value = editingTable.imageZoom || 100;
+      imageXSlider.value = editingTable.imageOffsetX ?? 50;
+      imageYSlider.value = editingTable.imageOffsetY ?? 50;
+    } else {
+      photoPreview.textContent = "Sin foto";
+      photoPreview.style.backgroundImage = "";
+      imageAdjust.classList.remove("show");
+    }
   }
 
   function openTableEditor(table) {
@@ -1521,6 +1618,9 @@
     reader.onload = () => {
       editingTable.image = reader.result;
       editingTable.color = null;
+      editingTable.imageZoom = 100;
+      editingTable.imageOffsetX = 50;
+      editingTable.imageOffsetY = 50;
       renderTables();
       syncEditor();
     };
@@ -1532,6 +1632,72 @@
     editingTable.image = null;
     renderTables();
     syncEditor();
+  });
+
+  // -- Adjust the photo's zoom/position inside the table shape ---------
+  imageZoomSlider.addEventListener("input", (e) => {
+    if (!editingTable) return;
+    editingTable.imageZoom = parseInt(e.target.value, 10);
+    renderTables();
+    syncEditor();
+  });
+  imageXSlider.addEventListener("input", (e) => {
+    if (!editingTable) return;
+    editingTable.imageOffsetX = parseInt(e.target.value, 10);
+    renderTables();
+    syncEditor();
+  });
+  imageYSlider.addEventListener("input", (e) => {
+    if (!editingTable) return;
+    editingTable.imageOffsetY = parseInt(e.target.value, 10);
+    renderTables();
+    syncEditor();
+  });
+  document.getElementById("editor-image-reset").addEventListener("click", () => {
+    if (!editingTable) return;
+    editingTable.imageZoom = 100;
+    editingTable.imageOffsetX = 50;
+    editingTable.imageOffsetY = 50;
+    renderTables();
+    syncEditor();
+  });
+
+  // -- Chair-count stepper (finer-grained than the canvas presets) -----
+  chairsMinus.addEventListener("click", () => {
+    if (!editingTable) return;
+    editingTable.targetChairs = Math.max(MIN_CHAIRS, editingTable.targetChairs - 1);
+    renderTables();
+    syncEditor();
+  });
+  chairsPlus.addEventListener("click", () => {
+    if (!editingTable) return;
+    editingTable.targetChairs = Math.min(MAX_CHAIRS, editingTable.targetChairs + 1);
+    renderTables();
+    syncEditor();
+  });
+
+  // -- Duplicate the table being edited ---------------------------------
+  function nextTableId() {
+    const maxN = tables.reduce((max, t) => {
+      const n = parseInt(t.id.replace(/^t/, ""), 10);
+      return Number.isNaN(n) ? max : Math.max(max, n);
+    }, 0);
+    return "t" + (maxN + 1);
+  }
+
+  document.getElementById("editor-duplicate").addEventListener("click", () => {
+    if (!editingTable) return;
+    const copy = {
+      ...editingTable,
+      id: nextTableId(),
+      label: editingTable.label + " (copia)",
+      x: editingTable.x + 30,
+      y: editingTable.y + 30,
+    };
+    tables.push(copy);
+    toast(`${editingTable.label}: mesa duplicada`);
+    openTableEditor(copy);
+    renderTables();
   });
 
   document.getElementById("editor-close").addEventListener("click", closeTableEditor);
