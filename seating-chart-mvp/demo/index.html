@@ -227,6 +227,25 @@
   .seat.empty {
     background: var(--surface);
     border: 1.5px dashed var(--line);
+    cursor: pointer;
+    transition: border-color 0.12s ease, transform 0.12s ease;
+  }
+  .seat.empty:hover { border-color: var(--accent); transform: scale(1.1); }
+  .allergy-badge {
+    position: absolute;
+    right: -3px;
+    bottom: -3px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--danger);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--surface);
   }
 
   .seat-label {
@@ -281,8 +300,48 @@
   .scale-handle { cursor: nwse-resize; }
   .edit-handle { left: -10px; top: -10px; background: var(--surface); border: 1.5px solid var(--accent); }
   .edit-handle svg { stroke: var(--accent); }
+  .delete-handle { background: var(--danger); }
+  .delete-handle svg { stroke: #fff; }
   .table:not(.selected) .handle,
   .table:not(.selected) .preset { display: none; }
+
+  /* ---------- Zoning elements: decor cards + wall segments ---------- */
+  .elem { position: absolute; left: 0; top: 0; touch-action: none; cursor: grab; user-select: none; }
+  .elem:active { cursor: grabbing; }
+  .elem-frame { position: relative; }
+  .elem:not(.selected) .handle { display: none; }
+
+  .elem.decor .elem-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    background: var(--surface-2);
+    border: 1.5px dashed var(--ink-dim);
+    border-radius: 12px;
+  }
+  .elem.decor.selected .elem-body { border-color: var(--accent); border-style: solid; }
+  .elem-emoji { font-size: 1.5rem; line-height: 1; }
+  .elem-label { font-size: 0.68rem; font-weight: 600; color: var(--ink-dim); text-align: center; padding: 0 0.3rem; }
+
+  .elem.wall .elem-body {
+    background: var(--ink);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .elem.wall.selected .elem-body { background: var(--accent); }
+  .wall-length {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--bg);
+    background: rgba(0, 0, 0, 0.35);
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
 
   /* ---------- Table editor modal ---------- */
   .editor-backdrop {
@@ -342,14 +401,15 @@
   .shape-toggle { display: flex; gap: 0.5rem; }
   .shape-btn {
     flex: 1;
-    padding: 0.5rem 0.4rem;
+    padding: 0.5rem 0.3rem;
     border-radius: 9px;
     border: 1.5px solid var(--line);
     background: var(--surface-2);
     color: var(--ink-dim);
-    font-size: 0.78rem;
+    font-size: 0.68rem;
     font-weight: 600;
     cursor: pointer;
+    white-space: nowrap;
   }
   .shape-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 
@@ -537,6 +597,26 @@
     padding: 1rem;
   }
 
+  /* ---------- Assign-guest picker (click an empty seat) ---------- */
+  .assign-list { max-height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.35rem; }
+  .assign-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--surface-2);
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.83rem;
+    color: var(--ink);
+  }
+  .assign-row:hover { border-color: var(--accent); }
+  .assign-row .guest-avatar { width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%; }
+  .assign-row .guest-avatar svg, .assign-row .guest-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+  .assign-row .assign-name { flex: 1; font-weight: 500; }
+
   /* ---------- Sidebar ---------- */
   aside {
     width: 280px;
@@ -601,7 +681,12 @@
   }
   .guest-card:active { cursor: grabbing; }
   .guest-card.dragging { opacity: 0.4; }
-  .guest-card .guest-avatar { width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; }
+  .guest-card .guest-avatar { position: relative; width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; }
+  .guest-card.not-confirmed { opacity: 0.55; }
+  .guest-card.not-confirmed:hover { opacity: 0.8; }
+  .rsvp-chip { font-size: 0.6rem; font-weight: 700; padding: 0.14rem 0.45rem; border-radius: 999px; white-space: nowrap; }
+  .rsvp-pending { color: var(--gold); background: #fdf1da; }
+  .rsvp-declined { color: var(--danger); background: #fbe3e7; }
   .guest-card .guest-avatar svg,
   .guest-card .guest-avatar img { width: 100%; height: 100%; display: block; border-radius: 50%; object-fit: cover; }
   .guest-name-wrap { flex: 1; min-width: 0; }
@@ -727,6 +812,44 @@
 
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
+  .scope-body { font-size: 0.83rem; line-height: 1.5; color: var(--ink); max-height: 60vh; overflow-y: auto; }
+  .scope-body p { margin: 0.6rem 0 0.3rem; }
+  .scope-body p:first-child { margin-top: 0; }
+  .scope-body ul { margin: 0; padding-left: 1.2rem; color: var(--ink-dim); }
+  .scope-body li { margin-bottom: 0.15rem; }
+
+  /* ---------- Print exports: kitchen sheet + place cards ---------- */
+  .print-only { display: none; }
+  @media print {
+    body { background: #fff; }
+    .app, .backdrop, .fab, #toast, .editor-backdrop { display: none !important; }
+    #kitchen-print, #cards-print { display: none; }
+    body[data-print="kitchen"] #kitchen-print { display: block; }
+    body[data-print="cards"] #cards-print { display: block; }
+  }
+
+  #kitchen-print { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #111; padding: 24px; }
+  #kitchen-print h1 { font-size: 20px; margin: 0 0 2px; }
+  #kitchen-print .kp-meta { font-size: 11px; color: #666; margin-bottom: 18px; }
+  #kitchen-print .kp-table { break-inside: avoid; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 8px; padding: 10px 14px; }
+  #kitchen-print .kp-table h2 { font-size: 14px; margin: 0 0 6px; }
+  #kitchen-print table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  #kitchen-print td { padding: 3px 4px; border-bottom: 1px solid #eee; }
+  #kitchen-print .kp-allergy { color: #a4432f; font-weight: 700; }
+  #kitchen-print .kp-summary { margin-top: 18px; font-size: 12px; border-top: 2px solid #111; padding-top: 10px; }
+
+  #cards-print { font-family: Georgia, "Iowan Old Style", serif; padding: 20px; }
+  #cards-print .cp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  #cards-print .cp-card {
+    border: 1px dashed #bbb;
+    border-radius: 4px;
+    padding: 18px 10px;
+    text-align: center;
+    break-inside: avoid;
+  }
+  #cards-print .cp-name { font-size: 17px; font-weight: 600; color: #111; }
+  #cards-print .cp-table { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #888; margin-top: 6px; }
+
   @media (max-width: 780px) {
     header .hint { display: none; }
     header { padding: 0.7rem 1rem; }
@@ -833,6 +956,38 @@
 </button>
 <div id="toast"></div>
 
+<div id="kitchen-print" class="print-only"></div>
+<div id="cards-print" class="print-only"></div>
+
+<div class="editor-backdrop" id="scope-backdrop">
+  <div class="editor" role="dialog" aria-label="Alcance de este prototipo">
+    <div class="editor-head">
+      <h3>Alcance de este prototipo</h3>
+      <button class="editor-close" id="scope-close" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="scope-body">
+      <p><strong>Funciona en este demo (sin backend):</strong></p>
+      <ul>
+        <li>Diseño de plano: arrastrar, rotar, escalar mesas y elementos</li>
+        <li>Muros y elementos de zonificación (pista, escenario, DJ, altar…)</li>
+        <li>Mesas redondas, rectangulares e imperiales</li>
+        <li>Importar invitados desde Excel/CSV</li>
+        <li>Asignación por arrastre o por clic + selector</li>
+        <li>Restricciones alimentarias y alergias graves</li>
+        <li>Filtro de RSVP (solo confirmados se sientan)</li>
+        <li>Exportar PDF de cocina y tarjetas de asiento</li>
+      </ul>
+      <p><strong>Requiere un backend (ya diseñado, ver README del proyecto):</strong></p>
+      <ul>
+        <li>Sincronización con el gestor central de invitados</li>
+        <li>RSVP automático desde un formulario externo</li>
+        <li>Actualización en tiempo real de carteles físicos</li>
+        <li>Colaboración multiusuario simultánea</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
 <div class="editor-backdrop" id="editor-backdrop">
   <div class="editor" role="dialog" aria-label="Editar mesa">
     <div class="editor-head">
@@ -850,6 +1005,7 @@
       <div class="shape-toggle">
         <button class="shape-btn" id="shape-round" type="button" data-shape="round">◯ Redonda</button>
         <button class="shape-btn" id="shape-rect" type="button" data-shape="rect">▭ Rectangular</button>
+        <button class="shape-btn" id="shape-imperial" type="button" data-shape="imperial">▭▭ Imperial</button>
       </div>
     </div>
 
@@ -915,6 +1071,15 @@
     </div>
 
     <div>
+      <label class="field-label" for="guest-editor-rsvp">RSVP</label>
+      <select class="select-input" id="guest-editor-rsvp">
+        <option value="confirmed">✅ Confirmado</option>
+        <option value="pending">⏳ Pendiente</option>
+        <option value="declined">✕ Declinado</option>
+      </select>
+    </div>
+
+    <div>
       <label class="field-label" for="guest-editor-diet">Restricción alimentaria</label>
       <select class="select-input" id="guest-editor-diet">
         <option value="none">Ninguna</option>
@@ -930,12 +1095,28 @@
       🧒 Es niño/a
     </label>
 
+    <label class="checkbox-row">
+      <input type="checkbox" id="guest-editor-allergy" />
+      ⚠️ Alergia grave (se marca en el plano)
+    </label>
+
     <div>
       <label class="field-label" for="guest-editor-note">Nota</label>
       <textarea class="note-input" id="guest-editor-note" maxlength="200" placeholder="Ej: silla de bebé, alergia severa, se sienta con..."></textarea>
     </div>
 
     <button class="danger-btn" id="guest-editor-unseat" type="button">Quitar de la mesa</button>
+  </div>
+</div>
+
+<div class="editor-backdrop" id="assign-backdrop">
+  <div class="editor" role="dialog" aria-label="Asignar invitado">
+    <div class="editor-head">
+      <h3>Asignar invitado</h3>
+      <button class="editor-close" id="assign-close" type="button" aria-label="Cerrar">✕</button>
+    </div>
+    <input class="name-input" id="assign-search" type="text" placeholder="Buscar invitado…" />
+    <div id="assign-list" class="assign-list"></div>
   </div>
 </div>
 
@@ -1062,22 +1243,38 @@
   const DIET_LABEL = { none: "", vegan: "Vegano", vegetarian: "Vegetariano", gluten_free: "Sin gluten", other: "Alergias" };
   const CHAIR_PRESETS = [4, 6, 8, 10];
 
+  // Zoning elements: decor (dance floor, stage, DJ booth, altar, gifts,
+  // cake) and walls (drawn to a real inch length). Both reuse the tables'
+  // drag/rotate/scale gestures below — those functions only touch generic
+  // x/y/rotation/scale fields, so no table-specific logic needs duplicating.
+  const DECOR_TYPES = {
+    dance: { emoji: "💃", label: "Pista de baile", width: 140, height: 100 },
+    stage: { emoji: "🎤", label: "Escenario", width: 160, height: 90 },
+    dj: { emoji: "🎧", label: "Cabina DJ", width: 90, height: 70 },
+    arch: { emoji: "⛪", label: "Arco / Altar", width: 110, height: 90 },
+    gift: { emoji: "🎁", label: "Mesa de regalos", width: 90, height: 60 },
+    cake: { emoji: "🎂", label: "Pastel", width: 80, height: 60 },
+  };
+  let elements = [];
+  let elementIdCounter = 1;
+
   let guests = [
-    { id: "g1", name: "Lucía Fernández", tableId: "t1", seatNumber: 0, diet: "none" },
-    { id: "g2", name: "Marcos Ibáñez", tableId: "t1", seatNumber: 1, diet: "vegan" },
-    { id: "g3", name: "Elena Ruiz", tableId: "t1", seatNumber: 2, diet: "none" },
-    { id: "g4", name: "Diego Torres", tableId: "t3", seatNumber: 0, diet: "gluten_free" },
-    { id: "g5", name: "Sofía Navarro", tableId: "t3", seatNumber: 1, diet: "none" },
-    { id: "g6", name: "Pablo Serrano", tableId: null, seatNumber: null, diet: "none" },
-    { id: "g7", name: "Carmen Vidal", tableId: null, seatNumber: null, diet: "vegetarian" },
-    { id: "g8", name: "Álvaro Molina", tableId: null, seatNumber: null, diet: "none" },
-    { id: "g9", name: "Nuria Campos", tableId: null, seatNumber: null, diet: "gluten_free" },
-    { id: "g10", name: "Héctor Guzmán", tableId: null, seatNumber: null, diet: "none" },
-    { id: "g11", name: "Beatriz Soler", tableId: null, seatNumber: null, diet: "other" },
-    { id: "g12", name: "Iván Cabrera", tableId: null, seatNumber: null, diet: "none" },
-    { id: "g13", name: "Rocío Delgado", tableId: null, seatNumber: null, diet: "vegan" },
-    { id: "g14", name: "Tomás Pardo", tableId: null, seatNumber: null, diet: "none" },
+    { id: "g1", name: "Lucía Fernández", tableId: "t1", seatNumber: 0, diet: "none", rsvp: "confirmed" },
+    { id: "g2", name: "Marcos Ibáñez", tableId: "t1", seatNumber: 1, diet: "vegan", rsvp: "confirmed" },
+    { id: "g3", name: "Elena Ruiz", tableId: "t1", seatNumber: 2, diet: "none", rsvp: "confirmed" },
+    { id: "g4", name: "Diego Torres", tableId: "t3", seatNumber: 0, diet: "gluten_free", rsvp: "confirmed", allergySevere: true },
+    { id: "g5", name: "Sofía Navarro", tableId: "t3", seatNumber: 1, diet: "none", rsvp: "confirmed" },
+    { id: "g6", name: "Pablo Serrano", tableId: null, seatNumber: null, diet: "none", rsvp: "confirmed" },
+    { id: "g7", name: "Carmen Vidal", tableId: null, seatNumber: null, diet: "vegetarian", rsvp: "confirmed" },
+    { id: "g8", name: "Álvaro Molina", tableId: null, seatNumber: null, diet: "none", rsvp: "pending" },
+    { id: "g9", name: "Nuria Campos", tableId: null, seatNumber: null, diet: "gluten_free", rsvp: "confirmed", allergySevere: true },
+    { id: "g10", name: "Héctor Guzmán", tableId: null, seatNumber: null, diet: "none", rsvp: "confirmed" },
+    { id: "g11", name: "Beatriz Soler", tableId: null, seatNumber: null, diet: "other", rsvp: "pending" },
+    { id: "g12", name: "Iván Cabrera", tableId: null, seatNumber: null, diet: "none", rsvp: "declined" },
+    { id: "g13", name: "Rocío Delgado", tableId: null, seatNumber: null, diet: "vegan", rsvp: "confirmed" },
+    { id: "g14", name: "Tomás Pardo", tableId: null, seatNumber: null, diet: "none", rsvp: "confirmed" },
   ];
+  const RSVP_LABEL = { confirmed: "Confirmado", pending: "Pendiente", declined: "Declinado" };
 
   const canvas = document.getElementById("canvas");
   const guestList = document.getElementById("guest-list");
@@ -1086,6 +1283,7 @@
   const toastEl = document.getElementById("toast");
 
   let selectedTableId = null;
+  let selectedElementId = null;
   let searchQuery = "";
   let toastTimer = null;
 
@@ -1158,6 +1356,13 @@
           seatEl.innerHTML = avatarMarkup(occupant);
           seatEl.title = occupant.name + " — clic para editar";
           seatEl.addEventListener("click", (e) => { e.stopPropagation(); openGuestEditor(occupant); });
+          if (occupant.allergySevere) {
+            const badge = document.createElement("span");
+            badge.className = "allergy-badge";
+            badge.textContent = "⚠";
+            badge.title = "Alergia grave";
+            seatEl.appendChild(badge);
+          }
           frame.appendChild(seatEl);
 
           // Name label runs outward along the seat's own radial spoke.
@@ -1183,6 +1388,8 @@
           label.textContent = firstName(occupant.name) + (last ? " " + last[0] + "." : "");
           frame.appendChild(label);
         } else {
+          seatEl.title = "Silla libre — clic para asignar un invitado";
+          seatEl.addEventListener("click", (e) => { e.stopPropagation(); openAssignPicker(table.id, seat.seatNumber); });
           frame.appendChild(seatEl);
         }
       }
@@ -1235,7 +1442,7 @@
 
       el.appendChild(frame);
       el.addEventListener("pointerdown", (e) => startDrag(e, table));
-      el.addEventListener("click", (e) => { e.stopPropagation(); selectedTableId = table.id; renderTables(); });
+      el.addEventListener("click", (e) => { e.stopPropagation(); selectedTableId = table.id; selectedElementId = null; renderTables(); });
       canvas.appendChild(el);
 
       // Handles need the *on-screen* center, not table.x/y, so rotate/scale stay
@@ -1244,22 +1451,104 @@
       rot.addEventListener("pointerdown", (e) => startRotate(e, table, el));
       scaleHandle.addEventListener("pointerdown", (e) => startScale(e, table, el));
     }
+
+    for (const item of elements) renderElement(item);
+  }
+
+  // Decor cards and wall segments — simpler siblings of tables (drag,
+  // rotate, scale, delete; no seats/editor modal).
+  function renderElement(item) {
+    const el = document.createElement("div");
+    el.className = "elem " + item.kind + (item.id === selectedElementId ? " selected" : "");
+    el.style.left = item.x + "px";
+    el.style.top = item.y + "px";
+    el.dataset.id = item.id;
+
+    const frame = document.createElement("div");
+    frame.className = "elem-frame";
+    frame.style.transform = `rotate(${item.rotation}deg) scale(${item.scale})`;
+
+    const body = document.createElement("div");
+    body.className = "elem-body";
+    body.style.width = item.width + "px";
+    body.style.height = item.height + "px";
+
+    if (item.kind === "wall") {
+      const lengthLabel = document.createElement("span");
+      lengthLabel.className = "wall-length";
+      lengthLabel.textContent = Math.round(item.width * item.scale) + '"';
+      body.appendChild(lengthLabel);
+    } else {
+      const emoji = document.createElement("span");
+      emoji.className = "elem-emoji";
+      emoji.textContent = item.emoji;
+      const label = document.createElement("span");
+      label.className = "elem-label";
+      label.textContent = item.label;
+      body.appendChild(emoji);
+      body.appendChild(label);
+    }
+    frame.appendChild(body);
+
+    const rot = document.createElement("div");
+    rot.className = "handle rotate-handle";
+    rot.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M4 12a8 8 0 1 1 2.5 5.8M4 12v5h5"/></svg>';
+    body.appendChild(rot);
+
+    const scaleHandle = document.createElement("div");
+    scaleHandle.className = "handle scale-handle";
+    scaleHandle.style.right = "-10px";
+    scaleHandle.style.bottom = "-10px";
+    scaleHandle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M6 18 18 6M12 18h6v-6"/></svg>';
+    body.appendChild(scaleHandle);
+
+    const delHandle = document.createElement("div");
+    delHandle.className = "handle delete-handle";
+    delHandle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-8 0 1 12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l1-12"/></svg>';
+    delHandle.title = "Eliminar";
+    delHandle.style.left = "-10px";
+    delHandle.style.top = "-10px";
+    delHandle.addEventListener("pointerdown", (e) => e.stopPropagation());
+    delHandle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      elements = elements.filter((it) => it.id !== item.id);
+      selectedElementId = null;
+      renderTables();
+    });
+    body.appendChild(delHandle);
+
+    el.appendChild(frame);
+    el.addEventListener("pointerdown", (e) => startDrag(e, item));
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      selectedElementId = item.id;
+      selectedTableId = null;
+      renderTables();
+    });
+    canvas.appendChild(el);
+
+    rot.addEventListener("pointerdown", (e) => startRotate(e, item, el));
+    scaleHandle.addEventListener("pointerdown", (e) => startScale(e, item, el));
   }
 
   canvas.addEventListener("pointerdown", (e) => {
-    if (e.target === canvas) { selectedTableId = null; renderTables(); }
+    if (e.target === canvas) { selectedTableId = null; selectedElementId = null; renderTables(); }
   });
 
   // ---------------------------------------------------------------
   // Drag / rotate / scale — pointer-event based (no external library)
   // ---------------------------------------------------------------
+  // Shared by tables AND zoning elements (decor/walls) — both are plain
+  // {x, y, rotation, scale, label} objects, so the same drag/rotate/scale
+  // gestures work for either; only the selection bookkeeping differs.
   function startDrag(e, table) {
     // Seats need their own click (open the guest editor / unseat) to reach
     // the target intact; if startDrag ran first it would re-render the
     // canvas mid-gesture and orphan the seat element before "click" fires.
     if (e.target.closest(".handle") || e.target.closest(".preset") || e.target.closest(".seat")) return;
     e.stopPropagation();
-    selectedTableId = table.id;
+    if (table.kind) { selectedElementId = table.id; selectedTableId = null; }
+    else { selectedTableId = table.id; selectedElementId = null; }
     const startX = e.clientX, startY = e.clientY;
     const origX = table.x, origY = table.y;
     renderTables();
@@ -1329,6 +1618,65 @@
   }
 
   // ---------------------------------------------------------------
+  // "+ Elemento" menu: zoning (dance floor, stage, DJ booth, altar, gift
+  // table, cake) and walls drawn to a real inch length.
+  // ---------------------------------------------------------------
+  const addElementBtn = document.getElementById("add-element-btn");
+  const addElementMenu = document.getElementById("add-element-menu");
+
+  addElementBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    addElementMenu.classList.toggle("show");
+  });
+  document.addEventListener("click", () => addElementMenu.classList.remove("show"));
+  addElementMenu.addEventListener("click", (e) => e.stopPropagation());
+
+  addElementMenu.querySelectorAll("button[data-decor]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const def = DECOR_TYPES[btn.dataset.decor];
+      const item = {
+        id: "e" + elementIdCounter++,
+        kind: "decor",
+        decorType: btn.dataset.decor,
+        emoji: def.emoji,
+        label: def.label,
+        width: def.width,
+        height: def.height,
+        x: 460 - def.width / 2,
+        y: 260 - def.height / 2,
+        rotation: 0,
+        scale: 1,
+      };
+      elements.push(item);
+      selectedElementId = item.id;
+      selectedTableId = null;
+      addElementMenu.classList.remove("show");
+      toast(`${def.label} añadido — arrástralo a su sitio`);
+      renderTables();
+    });
+  });
+
+  addElementMenu.querySelector("button[data-wall]").addEventListener("click", () => {
+    const item = {
+      id: "e" + elementIdCounter++,
+      kind: "wall",
+      label: "Muro",
+      width: 220,
+      height: 14,
+      x: 380,
+      y: 150,
+      rotation: 0,
+      scale: 1,
+    };
+    elements.push(item);
+    selectedElementId = item.id;
+    selectedTableId = null;
+    addElementMenu.classList.remove("show");
+    toast("Muro añadido — arrastra para moverlo, la esquina para ajustar su longitud");
+    renderTables();
+  });
+
+  // ---------------------------------------------------------------
   // Guest sidebar + native HTML5 drag-and-drop onto the canvas
   // ---------------------------------------------------------------
   function renderGuests() {
@@ -1349,14 +1697,22 @@
     }
 
     for (const guest of unassigned) {
+      const notConfirmed = guest.rsvp && guest.rsvp !== "confirmed";
       const card = document.createElement("div");
-      card.className = "guest-card";
+      card.className = "guest-card" + (notConfirmed ? " not-confirmed" : "");
       card.dataset.id = guest.id;
       card.addEventListener("pointerdown", (e) => startGuestDrag(e, guest, card));
 
       const avatar = document.createElement("div");
       avatar.className = "guest-avatar";
       avatar.innerHTML = avatarMarkup(guest);
+      if (guest.allergySevere) {
+        const badge = document.createElement("span");
+        badge.className = "allergy-badge";
+        badge.textContent = "⚠";
+        badge.title = "Alergia grave";
+        avatar.appendChild(badge);
+      }
       card.appendChild(avatar);
 
       const nameWrap = document.createElement("div");
@@ -1374,9 +1730,15 @@
       }
       card.appendChild(nameWrap);
 
-      if (guest.diet !== "none" || guest.child) {
+      if (guest.diet !== "none" || guest.child || notConfirmed) {
         const chips = document.createElement("div");
         chips.className = "guest-chips";
+        if (notConfirmed) {
+          const chip = document.createElement("span");
+          chip.className = "rsvp-chip rsvp-" + guest.rsvp;
+          chip.textContent = guest.rsvp === "pending" ? "⏳ Pendiente" : "✕ Declinado";
+          chips.appendChild(chip);
+        }
         if (guest.diet !== "none") {
           const chip = document.createElement("span");
           chip.className = "diet-chip diet-" + guest.diet;
@@ -1416,7 +1778,28 @@
   // Pointer-based drag for guest cards (works on touch, unlike HTML5 DnD,
   // which has no native touch support on mobile browsers).
   // ---------------------------------------------------------------
+  // Single choke point for "put this guest in this seat" — used by drag&drop,
+  // the click-to-assign popover, and the Excel/CSV importer, so the RSVP
+  // rule (only confirmed guests get seated) only has to live in one place.
+  function seatGuest(guest, tableId, seatNumber) {
+    if (guest.rsvp && guest.rsvp !== "confirmed") {
+      toast(`${guest.name} no está confirmado (${RSVP_LABEL[guest.rsvp]}) — actualiza su RSVP antes de sentarlo`);
+      return false;
+    }
+    guest.tableId = tableId;
+    guest.seatNumber = seatNumber;
+    const table = tables.find((t) => t.id === tableId);
+    toast(`${guest.name} sentado en ${table.label}, silla ${seatNumber + 1}`);
+    renderTables();
+    renderGuests();
+    return true;
+  }
+
   function startGuestDrag(e, guest, card) {
+    if (guest.rsvp && guest.rsvp !== "confirmed") {
+      toast(`${guest.name} no está confirmado todavía (${RSVP_LABEL[guest.rsvp]})`);
+      return;
+    }
     e.preventDefault();
     card.classList.add("dragging");
 
@@ -1451,15 +1834,9 @@
         y: ev.clientY - wrapRect.top + canvasWrap.scrollTop,
       };
       const target = findNearestEmptySeat(tables, guests, point, 46);
-      if (target) {
-        guest.tableId = target.tableId;
-        guest.seatNumber = target.seatNumber;
-        const table = tables.find((t) => t.id === target.tableId);
-        toast(`${guest.name} sentado en ${table.label}, silla ${target.seatNumber + 1}`);
-        renderTables();
-        renderGuests();
+      if (target && seatGuest(guest, target.tableId, target.seatNumber)) {
         closeDrawer();
-      } else {
+      } else if (!target) {
         toast("Suelta el invitado más cerca de una silla libre");
       }
     }
@@ -1505,8 +1882,10 @@
   // ---------------------------------------------------------------
   const guestEditorBackdrop = document.getElementById("guest-editor-backdrop");
   const guestEditorName = document.getElementById("guest-editor-name");
+  const guestEditorRsvp = document.getElementById("guest-editor-rsvp");
   const guestEditorDiet = document.getElementById("guest-editor-diet");
   const guestEditorChild = document.getElementById("guest-editor-child");
+  const guestEditorAllergy = document.getElementById("guest-editor-allergy");
   const guestEditorNote = document.getElementById("guest-editor-note");
   const guestEditorUnseat = document.getElementById("guest-editor-unseat");
   let editingGuest = null;
@@ -1514,8 +1893,10 @@
   function openGuestEditor(guest) {
     editingGuest = guest;
     guestEditorName.value = guest.name;
+    guestEditorRsvp.value = guest.rsvp || "confirmed";
     guestEditorDiet.value = guest.diet || "none";
     guestEditorChild.checked = !!guest.child;
+    guestEditorAllergy.checked = !!guest.allergySevere;
     guestEditorNote.value = guest.note || "";
     guestEditorUnseat.style.display = guest.tableId ? "block" : "none";
     guestEditorBackdrop.classList.add("show");
@@ -1531,6 +1912,17 @@
     renderTables();
     renderGuests();
   });
+  guestEditorRsvp.addEventListener("change", (e) => {
+    if (!editingGuest) return;
+    editingGuest.rsvp = e.target.value;
+    // Only confirmed guests may occupy a seat — downgrading RSVP on a
+    // seated guest frees their chair back up automatically.
+    if (editingGuest.rsvp !== "confirmed" && editingGuest.tableId) {
+      unseatGuest(editingGuest.id);
+      guestEditorUnseat.style.display = "none";
+    }
+    renderGuests();
+  });
   guestEditorDiet.addEventListener("change", (e) => {
     if (!editingGuest) return;
     editingGuest.diet = e.target.value;
@@ -1539,6 +1931,12 @@
   guestEditorChild.addEventListener("change", (e) => {
     if (!editingGuest) return;
     editingGuest.child = e.target.checked;
+    renderGuests();
+  });
+  guestEditorAllergy.addEventListener("change", (e) => {
+    if (!editingGuest) return;
+    editingGuest.allergySevere = e.target.checked;
+    renderTables();
     renderGuests();
   });
   guestEditorNote.addEventListener("input", (e) => {
@@ -1554,6 +1952,67 @@
   document.getElementById("guest-editor-close").addEventListener("click", closeGuestEditor);
   guestEditorBackdrop.addEventListener("click", (e) => {
     if (e.target === guestEditorBackdrop) closeGuestEditor();
+  });
+
+  // ---------------------------------------------------------------
+  // Assign-guest picker: click an empty seat, pick a name from a
+  // dropdown-style list instead of dragging — the assisted-assignment
+  // flow from the spec, on top of the existing drag & drop.
+  // ---------------------------------------------------------------
+  const assignBackdrop = document.getElementById("assign-backdrop");
+  const assignSearch = document.getElementById("assign-search");
+  const assignListEl = document.getElementById("assign-list");
+  let assignTarget = null; // { tableId, seatNumber }
+
+  function openAssignPicker(tableId, seatNumber) {
+    assignTarget = { tableId, seatNumber };
+    assignSearch.value = "";
+    renderAssignList();
+    assignBackdrop.classList.add("show");
+    assignSearch.focus();
+  }
+  function closeAssignPicker() {
+    assignBackdrop.classList.remove("show");
+    assignTarget = null;
+  }
+
+  function renderAssignList() {
+    const query = assignSearch.value.trim().toLowerCase();
+    const candidates = guests.filter(
+      (g) => !g.tableId && g.rsvp !== "declined" && g.name.toLowerCase().includes(query)
+    );
+    assignListEl.innerHTML = "";
+    if (!candidates.length) {
+      const empty = document.createElement("div");
+      empty.className = "import-empty";
+      empty.textContent = "No hay invitados sin mesa que coincidan.";
+      assignListEl.appendChild(empty);
+      return;
+    }
+    for (const guest of candidates) {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "assign-row";
+      const pending = guest.rsvp === "pending";
+      const avatar = document.createElement("span");
+      avatar.className = "guest-avatar";
+      avatar.innerHTML = avatarMarkup(guest);
+      const name = document.createElement("span");
+      name.className = "assign-name";
+      name.textContent = guest.name + (pending ? " (RSVP pendiente)" : "");
+      row.appendChild(avatar);
+      row.appendChild(name);
+      row.addEventListener("click", () => {
+        if (!assignTarget) return;
+        if (seatGuest(guest, assignTarget.tableId, assignTarget.seatNumber)) closeAssignPicker();
+      });
+      assignListEl.appendChild(row);
+    }
+  }
+  assignSearch.addEventListener("input", renderAssignList);
+  document.getElementById("assign-close").addEventListener("click", closeAssignPicker);
+  assignBackdrop.addEventListener("click", (e) => {
+    if (e.target === assignBackdrop) closeAssignPicker();
   });
 
   // ---------------------------------------------------------------
@@ -1582,12 +2041,17 @@
   const MIN_CHAIRS = 2;
   const MAX_CHAIRS = 20;
 
-  // Round <-> rectangular defaults, kept sane so switching shape doesn't
-  // leave a round table absurdly wide or a rectangle perfectly square.
+  // Round / rectangular / imperial (long banquet table) defaults, kept sane
+  // so switching shape doesn't leave a round table absurdly wide. Imperial
+  // shares the "rect" table.type (same border-radius, same two-long-sides
+  // chair layout) — only its default size and the editor's active-button
+  // highlight (via table.shapeVariant) differ from a regular rectangle.
   const SHAPE_DEFAULTS = {
     round: { width: 130, height: 130 },
     rect: { width: 200, height: 90 },
+    imperial: { width: 340, height: 90 },
   };
+  const SHAPE_TYPE = { round: "round", rect: "rect", imperial: "rect" };
 
   function buildSwatches() {
     swatchesEl.innerHTML = "";
@@ -1625,8 +2089,10 @@
     if (!editingTable) return;
     editorName.value = editingTable.label;
 
-    document.getElementById("shape-round").classList.toggle("active", editingTable.type === "round");
-    document.getElementById("shape-rect").classList.toggle("active", editingTable.type === "rect");
+    const variant = editingTable.shapeVariant || editingTable.type;
+    document.getElementById("shape-round").classList.toggle("active", variant === "round");
+    document.getElementById("shape-rect").classList.toggle("active", variant === "rect");
+    document.getElementById("shape-imperial").classList.toggle("active", variant === "imperial");
 
     swatchesEl.querySelectorAll(".swatch").forEach((sw) => {
       const isNone = sw.classList.contains("none");
@@ -1675,8 +2141,9 @@
     btn.addEventListener("click", () => {
       if (!editingTable) return;
       const shape = btn.dataset.shape;
-      if (editingTable.type === shape) return;
-      editingTable.type = shape;
+      if ((editingTable.shapeVariant || editingTable.type) === shape) return;
+      editingTable.type = SHAPE_TYPE[shape];
+      editingTable.shapeVariant = shape;
       const d = SHAPE_DEFAULTS[shape];
       editingTable.width = d.width;
       editingTable.height = d.height;
@@ -1935,6 +2402,8 @@
     ["seat", "Silla (nº)"],
     ["diet", "Restricción alimentaria"],
     ["child", "Niño/a"],
+    ["allergy", "Alergia grave"],
+    ["rsvp", "RSVP"],
     ["note", "Nota"],
   ];
 
@@ -1943,8 +2412,10 @@
     if (/nombre|invitad|guest|name/.test(h)) return "name";
     if (/mesa|table/.test(h)) return "table";
     if (/silla|asiento|seat/.test(h)) return "seat";
+    if (/alerg/.test(h)) return "allergy";
     if (/dieta|alimentari|restricci|diet/.test(h)) return "diet";
     if (/ni[ñn]o|kid|child|edad/.test(h)) return "child";
+    if (/rsvp|confirmaci|asistencia/.test(h)) return "rsvp";
     if (/nota|observ|coment|note/.test(h)) return "note";
     return "ignore";
   }
@@ -2027,6 +2498,13 @@
     const t = (text || "").toString().trim().toLowerCase();
     return ["si", "sí", "s", "y", "yes", "x", "true", "1"].includes(t);
   }
+  function mapRsvpText(text) {
+    const t = (text || "").toString().trim().toLowerCase();
+    if (/declin|no asist|cancel|no\b/.test(t)) return "declined";
+    if (/pendient|sin confirmar|pending|no respond/.test(t)) return "pending";
+    if (/confirm|s[ií]\b|yes|attending/.test(t)) return "confirmed";
+    return "confirmed"; // sheets with no RSVP column at all default to confirmed
+  }
 
   function commitImport() {
     const mapping = {};
@@ -2055,13 +2533,15 @@
         seatNumber: null,
         diet: mapping.diet !== undefined ? mapDietText(row[mapping.diet]) : "none",
         child: mapping.child !== undefined ? isTruthyChild(row[mapping.child]) : false,
+        allergySevere: mapping.allergy !== undefined ? isTruthyChild(row[mapping.allergy]) : false,
+        rsvp: mapping.rsvp !== undefined ? mapRsvpText(row[mapping.rsvp]) : "confirmed",
         note: mapping.note !== undefined ? (row[mapping.note] || "").toString().trim() : "",
       };
 
-      // Auto-seat only when the sheet names a real table AND that table
-      // has a free seat available (falls back to any open seat at that
-      // table if the given seat number is missing/taken/out of range).
-      if (mapping.table !== undefined) {
+      // Auto-seat only when the sheet names a real table, that table has a
+      // free seat, AND RSVP is confirmed (unconfirmed guests import fine,
+      // they just stay unassigned until their RSVP is settled).
+      if (mapping.table !== undefined && guest.rsvp === "confirmed") {
         const tableRaw = (row[mapping.table] || "").toString().trim().toLowerCase();
         const table = tableRaw
           ? tables.find((t) => t.label.toLowerCase().includes(tableRaw) || t.id.replace("t", "") === tableRaw)
@@ -2096,6 +2576,79 @@
     renderGuests();
     toast(`Se importaron ${newGuests.length} invitados` + (seated ? ` (${seated} ya sentados)` : ""));
   }
+
+  // ---------------------------------------------------------------
+  // Print exports: a kitchen sheet (per-table diets/allergies, for
+  // catering) and place cards (one per seated guest). Both build into a
+  // hidden container and hand off to the browser's own print/PDF dialog —
+  // no PDF library needed, and it works entirely offline.
+  // ---------------------------------------------------------------
+  function escapeHtml2(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function populateKitchenPrint() {
+    const container = document.getElementById("kitchen-print");
+    const dietCounts = { none: 0, vegan: 0, vegetarian: 0, gluten_free: 0, other: 0 };
+    let html = `<h1>Plano de Mesas — Listado de cocina</h1>`;
+    html += `<div class="kp-meta">Generado ${new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })} · ${tables.length} mesas</div>`;
+
+    for (const table of tables) {
+      const seated = guests
+        .filter((g) => g.tableId === table.id)
+        .sort((a, b) => a.seatNumber - b.seatNumber);
+      if (!seated.length) continue;
+      html += `<div class="kp-table"><h2>${escapeHtml2(table.label)} — ${seated.length} comensales</h2><table>`;
+      for (const g of seated) {
+        dietCounts[g.diet] = (dietCounts[g.diet] || 0) + 1;
+        const dietText = g.diet !== "none" ? escapeHtml2(DIET_LABEL[g.diet]) : "Sin restricción";
+        const allergy = g.allergySevere ? ' <span class="kp-allergy">⚠ ALERGIA GRAVE</span>' : "";
+        html += `<tr><td>${escapeHtml2(g.name)}</td><td>${dietText}${allergy}</td><td>${g.note ? escapeHtml2(g.note) : ""}</td></tr>`;
+      }
+      html += `</table></div>`;
+    }
+
+    const unseated = guests.filter((g) => !g.tableId && g.rsvp === "confirmed");
+    html += `<div class="kp-summary"><strong>Resumen de menús (invitados sentados):</strong> `;
+    html += Object.entries(dietCounts).filter(([, n]) => n > 0).map(([k, n]) => `${DIET_LABEL[k] || "Sin restricción"}: ${n}`).join(" · ");
+    html += `<br>Confirmados aún sin mesa: ${unseated.length}</div>`;
+
+    container.innerHTML = html;
+  }
+
+  function populateCardsPrint() {
+    const container = document.getElementById("cards-print");
+    const seated = guests.filter((g) => g.tableId).sort((a, b) => a.name.localeCompare(b.name, "es"));
+    let html = `<div class="cp-grid">`;
+    for (const g of seated) {
+      const table = tables.find((t) => t.id === g.tableId);
+      html += `<div class="cp-card"><div class="cp-name">${escapeHtml2(g.name)}</div><div class="cp-table">${escapeHtml2(table ? table.label : "")}</div></div>`;
+    }
+    html += `</div>`;
+    container.innerHTML = seated.length
+      ? html
+      : `<p style="text-align:center;color:#888;">Todavía no hay invitados sentados en ninguna mesa.</p>`;
+  }
+
+  document.getElementById("export-kitchen-btn").addEventListener("click", () => {
+    populateKitchenPrint();
+    document.body.dataset.print = "kitchen";
+    window.print();
+  });
+  document.getElementById("export-cards-btn").addEventListener("click", () => {
+    populateCardsPrint();
+    document.body.dataset.print = "cards";
+    window.print();
+  });
+  window.addEventListener("afterprint", () => { delete document.body.dataset.print; });
+
+  // ---------------------------------------------------------------
+  // Scope info: what this static, backend-less prototype can and can't do.
+  // ---------------------------------------------------------------
+  const scopeBackdrop = document.getElementById("scope-backdrop");
+  document.getElementById("scope-info-btn").addEventListener("click", () => scopeBackdrop.classList.add("show"));
+  document.getElementById("scope-close").addEventListener("click", () => scopeBackdrop.classList.remove("show"));
+  scopeBackdrop.addEventListener("click", (e) => { if (e.target === scopeBackdrop) scopeBackdrop.classList.remove("show"); });
 
   renderTables();
   renderGuests();
