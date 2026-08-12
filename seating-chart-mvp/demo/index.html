@@ -3,85 +3,76 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root {
-    --bg: #faf6ef;
+    --bg: #fbfbfa;
     --surface: #ffffff;
-    --surface-2: #f3ede1;
-    --ink: #2b2420;
-    --ink-dim: #6b6154;
-    --line: #e6ddcb;
-    --accent: #8a2c3b;
+    --surface-2: #f4f5f6;
+    --ink: #21252b;
+    --ink-dim: #8b93a1;
+    --line: #e6e8eb;
+    --dot: #d7dbe0;
+    --accent: #2f6fed;
+    --accent-soft: #e8f0ff;
     --accent-ink: #ffffff;
-    --gold: #ad8a3f;
-    --gold-soft: #ecdfbe;
-    --seat-empty: #ffffff;
-    --seat-empty-line: #c9bda3;
-    --seat-occupied: #ecdfbe;
-    --seat-occupied-line: #ad8a3f;
-    --danger: #a4432f;
-    --diet-vegan: #5c7a4f;
-    --diet-vegan-bg: #e4ebdd;
-    --diet-gf: #3f7a72;
-    --diet-gf-bg: #dcecea;
-    --diet-veg: #8a6d2f;
-    --diet-veg-bg: #ede2c6;
-    --diet-other: #6b6154;
-    --diet-other-bg: #ece7dc;
-    --shadow: 0 1px 2px rgba(43, 36, 32, 0.06), 0 8px 24px -12px rgba(43, 36, 32, 0.18);
+    --gold: #f0b23c;
+    --danger: #e0526a;
+    --diet-vegan: #4f9d63;
+    --diet-vegan-bg: #e7f5ea;
+    --diet-gf: #2e9a9a;
+    --diet-gf-bg: #e3f5f5;
+    --diet-veg: #b8862f;
+    --diet-veg-bg: #faf0dc;
+    --diet-other: #8b93a1;
+    --diet-other-bg: #eef0f2;
+    --shadow: 0 1px 2px rgba(20, 24, 33, 0.05), 0 10px 26px -14px rgba(20, 24, 33, 0.22);
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #1c1815;
-      --surface: #262019;
-      --surface-2: #2e2720;
-      --ink: #f1ebdf;
-      --ink-dim: #a89c8a;
-      --line: #3d352b;
-      --accent: #e6a0ac;
-      --accent-ink: #2b1015;
-      --gold: #d9b567;
-      --gold-soft: #3a331f;
-      --seat-empty: #302921;
-      --seat-empty-line: #4c4232;
-      --seat-occupied: #3a331f;
-      --seat-occupied-line: #d9b567;
-      --danger: #e08469;
-      --diet-vegan: #a3c98f;
-      --diet-vegan-bg: #2b3324;
-      --diet-gf: #8fcac0;
-      --diet-gf-bg: #1f3330;
-      --diet-veg: #d9c184;
-      --diet-veg-bg: #332c1c;
-      --diet-other: #b8ac99;
-      --diet-other-bg: #302a22;
-      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+      --bg: #16181c;
+      --surface: #1e2126;
+      --surface-2: #24272d;
+      --ink: #eef0f3;
+      --ink-dim: #8b93a1;
+      --line: #2c3038;
+      --dot: #33383f;
+      --accent: #6d9bff;
+      --accent-soft: #1c2942;
+      --accent-ink: #0c1526;
+      --gold: #f0c05e;
+      --danger: #ef7a8c;
+      --diet-vegan: #7fce93;
+      --diet-vegan-bg: #1b2f22;
+      --diet-gf: #64c9c9;
+      --diet-gf-bg: #17302f;
+      --diet-veg: #e0b567;
+      --diet-veg-bg: #332711;
+      --diet-other: #a2a9b5;
+      --diet-other-bg: #262a30;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 26px -14px rgba(0, 0, 0, 0.6);
     }
   }
   :root[data-theme="dark"] {
-    --bg: #1c1815;
-    --surface: #262019;
-    --surface-2: #2e2720;
-    --ink: #f1ebdf;
-    --ink-dim: #a89c8a;
-    --line: #3d352b;
-    --accent: #e6a0ac;
-    --accent-ink: #2b1015;
-    --gold: #d9b567;
-    --gold-soft: #3a331f;
-    --seat-empty: #302921;
-    --seat-empty-line: #4c4232;
-    --seat-occupied: #3a331f;
-    --seat-occupied-line: #d9b567;
-    --danger: #e08469;
-    --diet-vegan: #a3c98f;
-    --diet-vegan-bg: #2b3324;
-    --diet-gf: #8fcac0;
-    --diet-gf-bg: #1f3330;
-    --diet-veg: #d9c184;
-    --diet-veg-bg: #332c1c;
-    --diet-other: #b8ac99;
-    --diet-other-bg: #302a22;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+    --bg: #16181c;
+    --surface: #1e2126;
+    --surface-2: #24272d;
+    --ink: #eef0f3;
+    --ink-dim: #8b93a1;
+    --line: #2c3038;
+    --dot: #33383f;
+    --accent: #6d9bff;
+    --accent-soft: #1c2942;
+    --accent-ink: #0c1526;
+    --gold: #f0c05e;
+    --danger: #ef7a8c;
+    --diet-vegan: #7fce93;
+    --diet-vegan-bg: #1b2f22;
+    --diet-gf: #64c9c9;
+    --diet-gf-bg: #17302f;
+    --diet-veg: #e0b567;
+    --diet-veg-bg: #332711;
+    --diet-other: #a2a9b5;
+    --diet-other-bg: #262a30;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 26px -14px rgba(0, 0, 0, 0.6);
   }
 
   * { box-sizing: border-box; }
@@ -95,11 +86,7 @@
   }
   body { overflow: hidden; }
 
-  .app {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
+  .app { display: flex; flex-direction: column; height: 100vh; }
 
   /* ---------- Header ---------- */
   header {
@@ -110,26 +97,27 @@
     border-bottom: 1px solid var(--line);
     background: var(--surface);
     flex-wrap: wrap;
+    z-index: 2;
   }
   header h1 {
-    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
-    font-size: 1.15rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
     margin: 0;
   }
   header .tag {
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--gold);
-    border: 1px solid var(--gold);
+    color: var(--accent);
+    background: var(--accent-soft);
     border-radius: 999px;
-    padding: 0.15rem 0.55rem;
+    padding: 0.2rem 0.55rem;
   }
   header .spacer { flex: 1; }
   header .hint {
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     color: var(--ink-dim);
     max-width: 34rem;
     text-align: right;
@@ -138,24 +126,17 @@
   header .hint b { color: var(--ink); font-weight: 600; }
 
   /* ---------- Layout ---------- */
-  .body {
-    flex: 1;
-    display: flex;
-    min-height: 0;
-  }
+  .body { flex: 1; display: flex; min-height: 0; }
 
   .canvas-wrap {
     flex: 1;
     position: relative;
     overflow: hidden;
-    background:
-      radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 0) 0 0/28px 28px,
-      var(--bg);
+    background-image: radial-gradient(circle, var(--dot) 1.4px, transparent 1.4px);
+    background-size: 24px 24px;
+    background-color: var(--bg);
   }
-  #canvas {
-    position: absolute;
-    inset: 0;
-  }
+  #canvas { position: absolute; inset: 0; }
 
   /* ---------- Table ---------- */
   .table {
@@ -167,74 +148,109 @@
     user-select: none;
   }
   .table:active { cursor: grabbing; }
+  .table-frame { position: relative; }
   .table-body {
     position: relative;
     background: var(--surface);
-    border: 2px solid var(--gold-soft);
+    border: 1.5px solid var(--line);
     box-shadow: var(--shadow);
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 0.35rem;
-  }
-  .table.selected .table-body { border-color: var(--accent); }
-  .table.round .table-body { border-radius: 50%; }
-  .table.rect .table-body { border-radius: 10px; }
-  .table-label {
-    font-family: Georgia, "Iowan Old Style", serif;
-    font-size: 0.72rem;
-    color: var(--ink-dim);
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-  }
-
-  .seat {
-    position: absolute;
-    width: 26px;
-    height: 26px;
-    margin: -13px 0 0 -13px;
-    border-radius: 50%;
-    background: var(--seat-empty);
-    border: 1.5px solid var(--seat-empty-line);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.62rem;
+  }
+  .table.selected .table-body { border-color: var(--accent); border-width: 2px; }
+  .table.round .table-body { border-radius: 50%; }
+  .table.rect .table-body { border-radius: 12px; }
+  .table-number {
+    font-size: 1.5rem;
     font-weight: 700;
+    font-variant-numeric: tabular-nums;
     color: var(--ink-dim);
+  }
+  .table.selected .table-number { color: var(--accent); }
+  .table-caption {
+    position: absolute;
+    left: 50%;
+    bottom: -22px;
+    transform: translateX(-50%);
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--ink-dim);
+    white-space: nowrap;
+  }
+
+  /* Guest seat = an illustrated head-and-shoulders avatar sitting at the chair spot */
+  .seat {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    margin: -17px 0 0 -17px;
+    border-radius: 50%;
     cursor: default;
-    transition: transform 0.12s ease, border-color 0.12s ease;
   }
   .seat.occupied {
-    background: var(--seat-occupied);
-    border-color: var(--seat-occupied-line);
-    color: var(--ink);
     cursor: pointer;
+    filter: drop-shadow(0 2px 3px rgba(20, 24, 33, 0.18));
+    transition: transform 0.12s ease;
   }
-  .seat.occupied:hover { transform: scale(1.12); }
-  .seat.target {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+  .seat.occupied:hover { transform: scale(1.14); }
+  .seat.occupied svg { width: 100%; height: 100%; display: block; }
+  .seat.empty {
+    background: var(--surface);
+    border: 1.5px dashed var(--line);
   }
+
+  .seat-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 50%;
+    font-size: 0.63rem;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    pointer-events: none;
+    letter-spacing: -0.01em;
+  }
+
+  /* Ghost chair-count presets around the selected table */
+  .preset {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    margin: -15px 0 0 -15px;
+    border-radius: 50%;
+    border: 1.5px dashed var(--line);
+    color: var(--ink-dim);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 700;
+    cursor: pointer;
+    opacity: 0.55;
+  }
+  .preset:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
 
   /* handles */
   .handle {
     position: absolute;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    background: var(--surface);
-    border: 1.5px solid var(--accent);
+    background: var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     box-shadow: var(--shadow);
   }
-  .handle svg { width: 10px; height: 10px; stroke: var(--accent); }
-  .rotate-handle { top: -34px; left: 50%; margin-left: -9px; }
+  .handle svg { width: 11px; height: 11px; stroke: var(--accent-ink); }
+  .rotate-handle { top: -36px; left: 50%; margin-left: -10px; }
   .scale-handle { cursor: nwse-resize; }
-  .table:not(.selected) .handle { display: none; }
+  .table:not(.selected) .handle,
+  .table:not(.selected) .preset { display: none; }
 
   /* ---------- Sidebar ---------- */
   aside {
@@ -245,22 +261,15 @@
     background: var(--surface);
     border-left: 1px solid var(--line);
   }
-  aside .head {
-    padding: 1rem 1rem 0.6rem;
-    border-bottom: 1px solid var(--line);
-  }
+  aside .head { padding: 1rem 1rem 0.6rem; border-bottom: 1px solid var(--line); }
   aside .head h2 {
     margin: 0 0 0.15rem;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.07em;
     color: var(--ink-dim);
   }
-  aside .head .count {
-    font-family: Georgia, serif;
-    font-size: 1.5rem;
-    font-variant-numeric: tabular-nums;
-  }
+  aside .head .count { font-size: 1.45rem; font-weight: 700; font-variant-numeric: tabular-nums; }
   aside .search {
     margin: 0.6rem 0.9rem;
     padding: 0.4rem 0.65rem;
@@ -272,59 +281,30 @@
   }
   aside .search:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 
-  #guest-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0.4rem 0.7rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
+  #guest-list { flex: 1; overflow-y: auto; padding: 0.4rem 0.7rem 1rem; display: flex; flex-direction: column; gap: 0.4rem; }
   .guest-card {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.6rem;
+    gap: 0.55rem;
+    padding: 0.4rem 0.55rem;
     border: 1px solid var(--line);
-    border-radius: 9px;
+    border-radius: 10px;
     background: var(--surface-2);
     font-size: 0.83rem;
     cursor: grab;
   }
   .guest-card:active { cursor: grabbing; }
   .guest-card.dragging { opacity: 0.4; }
-  .guest-avatar {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: var(--gold-soft);
-    color: var(--gold);
-    font-size: 0.68rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .guest-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .diet-chip {
-    font-size: 0.62rem;
-    font-weight: 600;
-    padding: 0.12rem 0.45rem;
-    border-radius: 999px;
-    white-space: nowrap;
-  }
+  .guest-card .guest-avatar { width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; }
+  .guest-card .guest-avatar svg { width: 100%; height: 100%; display: block; }
+  .guest-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  .diet-chip { font-size: 0.6rem; font-weight: 700; padding: 0.14rem 0.45rem; border-radius: 999px; white-space: nowrap; }
   .diet-vegan { color: var(--diet-vegan); background: var(--diet-vegan-bg); }
   .diet-gluten_free { color: var(--diet-gf); background: var(--diet-gf-bg); }
   .diet-vegetarian { color: var(--diet-veg); background: var(--diet-veg-bg); }
   .diet-other { color: var(--diet-other); background: var(--diet-other-bg); }
 
-  .empty-note {
-    text-align: center;
-    color: var(--ink-dim);
-    font-size: 0.8rem;
-    padding: 2rem 1rem;
-  }
+  .empty-note { text-align: center; color: var(--ink-dim); font-size: 0.8rem; padding: 2rem 1rem; }
 
   aside .legend {
     padding: 0.7rem 1rem 0.9rem;
@@ -335,10 +315,10 @@
     flex-direction: column;
     gap: 0.35rem;
   }
-  aside .legend .row { display: flex; align-items: center; gap: 0.4rem; }
-  aside .legend .dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-  .dot.empty { background: var(--seat-empty); border: 1.5px solid var(--seat-empty-line); }
-  .dot.occ { background: var(--seat-occupied); border: 1.5px solid var(--seat-occupied-line); }
+  aside .legend .row { display: flex; align-items: center; gap: 0.45rem; }
+  aside .legend .dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+  .dot.empty { background: var(--surface); border: 1.5px dashed var(--line); }
+  .dot.occ { background: var(--gold); }
 
   /* toast */
   #toast {
@@ -358,9 +338,7 @@
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; }
-  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
 <div class="app">
@@ -369,8 +347,8 @@
     <span class="tag">Demo</span>
     <div class="spacer"></div>
     <div class="hint">
-      Arrastra una mesa para moverla · usa el asa dorada para <b>rotarla</b> y la esquina para <b>escalarla</b> ·
-      arrastra un invitado de la derecha hasta una silla vacía.
+      Arrastra una mesa para moverla · asa azul superior para <b>rotar</b>, esquina para <b>escalar</b> ·
+      selecciona una mesa para ver los presets de nº de sillas · arrastra un invitado hasta una silla vacía.
     </div>
   </header>
   <div class="body">
@@ -400,7 +378,7 @@
   // ---------------------------------------------------------------
   // Geometry helpers — mirrors src/lib/seatLayout.js from the MVP source
   // ---------------------------------------------------------------
-  const CHAIR_OFFSET = 26;
+  const CHAIR_OFFSET = 30;
 
   function getChairPositions(table) {
     const { type, targetChairs, width, height } = table;
@@ -454,16 +432,43 @@
   }
 
   // ---------------------------------------------------------------
+  // Illustrated avatar — flat head-and-shoulders icon, colors derived
+  // deterministically from the guest id so they stay stable on re-render.
+  // ---------------------------------------------------------------
+  const SKIN = ["#f4c294", "#e3a877", "#c98a5c", "#9c6742", "#f0b483"];
+  const HAIR = ["#2b241f", "#5a3826", "#171412", "#7a4a2b", "#3d3128"];
+  const SHIRT = ["#2f6fed", "#e0526a", "#4f9d63", "#f0b23c", "#8a5fd6", "#4aa8c7"];
+
+  function hashStr(s) {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  function avatarSVG(seed) {
+    const h = hashStr(seed);
+    const shirt = SHIRT[h % SHIRT.length];
+    const hair = HAIR[(h >> 3) % HAIR.length];
+    const skin = SKIN[(h >> 6) % SKIN.length];
+    return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="19" fill="${shirt}"/>
+      <circle cx="20" cy="13" r="8.4" fill="${hair}"/>
+      <circle cx="20" cy="16.5" r="6.6" fill="${skin}"/>
+    </svg>`;
+  }
+
+  // ---------------------------------------------------------------
   // Demo data
   // ---------------------------------------------------------------
   const tables = [
-    { id: "t1", type: "round", label: "Mesa 1 — Familia", targetChairs: 8, width: 130, height: 130, x: 230, y: 160, rotation: 0, scale: 1 },
-    { id: "t2", type: "round", label: "Mesa 2 — Amigos", targetChairs: 8, width: 130, height: 130, x: 560, y: 160, rotation: 0, scale: 1 },
-    { id: "t3", type: "rect", label: "Mesa Presidencial", targetChairs: 6, width: 220, height: 90, x: 400, y: 400, rotation: 0, scale: 1 },
-    { id: "t4", type: "round", label: "Mesa 4", targetChairs: 6, width: 110, height: 110, x: 760, y: 400, rotation: 18, scale: 1 },
+    { id: "t1", type: "round", label: "Mesa 1 — Familia", targetChairs: 8, width: 130, height: 130, x: 250, y: 190, rotation: 0, scale: 1 },
+    { id: "t2", type: "round", label: "Mesa 2 — Amigos", targetChairs: 8, width: 130, height: 130, x: 600, y: 170, rotation: 0, scale: 1 },
+    { id: "t3", type: "rect", label: "Mesa Presidencial", targetChairs: 6, width: 220, height: 90, x: 420, y: 440, rotation: 0, scale: 1 },
+    { id: "t4", type: "round", label: "Mesa 4", targetChairs: 6, width: 110, height: 110, x: 800, y: 440, rotation: 18, scale: 1 },
   ];
 
   const DIET_LABEL = { none: "", vegan: "Vegano", vegetarian: "Vegetariano", gluten_free: "Sin gluten", other: "Alergias" };
+  const CHAIR_PRESETS = [4, 6, 8, 10];
 
   let guests = [
     { id: "g1", name: "Lucía Fernández", tableId: "t1", seatNumber: 0, diet: "none" },
@@ -499,12 +504,11 @@
     toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1600);
   }
 
-  function initials(name) {
-    return name.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]).join("").toUpperCase();
-  }
+  function firstName(name) { return name.split(" ")[0]; }
+  function lastName(name) { const parts = name.split(" "); return parts.length > 1 ? parts.slice(1).join(" ") : ""; }
 
   // ---------------------------------------------------------------
-  // Render: tables + chairs
+  // Render: tables + chairs + radial name labels
   // ---------------------------------------------------------------
   function renderTables() {
     canvas.innerHTML = "";
@@ -515,54 +519,107 @@
       el.style.top = table.y + "px";
       el.dataset.id = table.id;
 
+      const frame = document.createElement("div");
+      frame.className = "table-frame";
+      frame.style.transform = `rotate(${table.rotation}deg) scale(${table.scale})`;
+
       const body = document.createElement("div");
       body.className = "table-body";
       body.style.width = table.width + "px";
       body.style.height = table.height + "px";
-      body.style.transform = `translate(-50%, -50%) rotate(${table.rotation}deg) scale(${table.scale})`;
 
-      const label = document.createElement("span");
-      label.className = "table-label";
-      label.textContent = table.label;
-      body.appendChild(label);
+      const num = document.createElement("span");
+      num.className = "table-number";
+      num.textContent = table.id.replace("t", "");
+      body.appendChild(num);
 
-      // Seats — positioned in the *rotated/scaled* local frame, matching seatLayout math.
+      const caption = document.createElement("span");
+      caption.className = "table-caption";
+      caption.style.transform = `translateX(-50%) rotate(${-table.rotation}deg)`;
+      caption.textContent = table.label;
+      body.appendChild(caption);
+      frame.appendChild(body);
+
+      // Seats + radial name labels — positioned in the table's local frame
+      // (the frame's own rotate/scale carries them along automatically).
       for (const seat of getChairPositions(table)) {
         const occupant = guests.find((g) => g.tableId === table.id && g.seatNumber === seat.seatNumber);
+        const cx = table.width / 2 + seat.x;
+        const cy = table.height / 2 + seat.y;
+
         const seatEl = document.createElement("div");
-        seatEl.className = "seat" + (occupant ? " occupied" : "");
-        seatEl.style.left = table.width / 2 + seat.x + "px";
-        seatEl.style.top = table.height / 2 + seat.y + "px";
-        seatEl.dataset.table = table.id;
-        seatEl.dataset.seat = seat.seatNumber;
+        seatEl.className = "seat " + (occupant ? "occupied" : "empty");
+        seatEl.style.left = cx + "px";
+        seatEl.style.top = cy + "px";
+
         if (occupant) {
-          seatEl.textContent = initials(occupant.name);
+          seatEl.innerHTML = avatarSVG(occupant.id);
           seatEl.title = occupant.name + " — clic para quitar de la mesa";
-          seatEl.addEventListener("click", (e) => {
-            e.stopPropagation();
-            unseatGuest(occupant.id);
-          });
+          seatEl.addEventListener("click", (e) => { e.stopPropagation(); unseatGuest(occupant.id); });
+          frame.appendChild(seatEl);
+
+          // Name label runs outward along the seat's own radial spoke.
+          const angleDeg = (Math.atan2(seat.y, seat.x) * 180) / Math.PI;
+          const dirX = Math.cos((angleDeg * Math.PI) / 180);
+          const dirY = Math.sin((angleDeg * Math.PI) / 180);
+          const flip = angleDeg > 90 || angleDeg < -90;
+          const labelStart = 20;
+          const lx = cx + dirX * labelStart;
+          const ly = cy + dirY * labelStart;
+
+          const label = document.createElement("div");
+          label.className = "seat-label";
+          label.style.left = lx + "px";
+          label.style.top = ly + "px";
+          label.style.transform = `rotate(${flip ? angleDeg + 180 : angleDeg}deg) ${flip ? "translateX(-100%)" : ""} rotate(${-table.rotation}deg)`;
+          label.style.transformOrigin = flip ? "100% 50%" : "0 50%";
+          label.textContent = firstName(occupant.name) + (lastName(occupant.name) ? " " + lastName(occupant.name) : "");
+          frame.appendChild(label);
+        } else {
+          frame.appendChild(seatEl);
         }
-        body.appendChild(seatEl);
       }
+
+      // Ghost chair-count presets — visible only on the selected table.
+      const presetRadius = Math.max(table.width, table.height) / 2 + 78;
+      CHAIR_PRESETS.filter((n) => n !== table.targetChairs).forEach((n, i) => {
+        const total = CHAIR_PRESETS.length - 1;
+        const angle = -Math.PI / 2 + ((i + 0.5) / total) * 1.4 * Math.PI + Math.PI * 0.55;
+        const px = table.width / 2 + Math.cos(angle) * presetRadius;
+        const py = table.height / 2 + Math.sin(angle) * presetRadius;
+        const preset = document.createElement("button");
+        preset.className = "preset";
+        preset.type = "button";
+        preset.style.left = px + "px";
+        preset.style.top = py + "px";
+        preset.style.transform = `rotate(${-table.rotation}deg)`;
+        preset.textContent = n;
+        preset.title = `Cambiar a ${n} sillas`;
+        preset.addEventListener("click", (e) => {
+          e.stopPropagation();
+          table.targetChairs = n;
+          toast(`${table.label}: ahora tiene ${n} sillas`);
+          renderTables();
+        });
+        frame.appendChild(preset);
+      });
 
       // Rotate handle
       const rot = document.createElement("div");
       rot.className = "handle rotate-handle";
-      rot.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M4 12a8 8 0 1 1 2.5 5.8M4 12v5h5"/></svg>';
+      rot.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M4 12a8 8 0 1 1 2.5 5.8M4 12v5h5"/></svg>';
       rot.addEventListener("pointerdown", (e) => startRotate(e, table));
       body.appendChild(rot);
 
-      // Scale handle (bottom-right corner of the bounding box)
       const scaleHandle = document.createElement("div");
       scaleHandle.className = "handle scale-handle";
-      scaleHandle.style.right = "-9px";
-      scaleHandle.style.bottom = "-9px";
-      scaleHandle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M6 18 18 6M12 18h6v-6"/></svg>';
+      scaleHandle.style.right = "-10px";
+      scaleHandle.style.bottom = "-10px";
+      scaleHandle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M6 18 18 6M12 18h6v-6"/></svg>';
       scaleHandle.addEventListener("pointerdown", (e) => startScale(e, table));
       body.appendChild(scaleHandle);
 
-      el.appendChild(body);
+      el.appendChild(frame);
       el.addEventListener("pointerdown", (e) => startDrag(e, table));
       el.addEventListener("click", (e) => { e.stopPropagation(); selectedTableId = table.id; renderTables(); });
       canvas.appendChild(el);
@@ -577,7 +634,7 @@
   // Drag / rotate / scale — pointer-event based (no external library)
   // ---------------------------------------------------------------
   function startDrag(e, table) {
-    if (e.target.closest(".handle")) return;
+    if (e.target.closest(".handle") || e.target.closest(".preset")) return;
     e.stopPropagation();
     selectedTableId = table.id;
     const startX = e.clientX, startY = e.clientY;
@@ -592,7 +649,7 @@
     function up() {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
-      toast(`${table.label}: posición actualizada (x:${Math.round(table.x)}, y:${Math.round(table.y)})`);
+      toast(`${table.label}: posición actualizada`);
     }
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
@@ -671,7 +728,7 @@
 
       const avatar = document.createElement("div");
       avatar.className = "guest-avatar";
-      avatar.textContent = initials(guest.name);
+      avatar.innerHTML = avatarSVG(guest.id);
 
       const name = document.createElement("div");
       name.className = "guest-name";
