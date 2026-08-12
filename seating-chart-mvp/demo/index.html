@@ -26,54 +26,8 @@
     --shadow: 0 1px 2px rgba(20, 24, 33, 0.05), 0 10px 26px -14px rgba(20, 24, 33, 0.22);
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #16181c;
-      --surface: #1e2126;
-      --surface-2: #24272d;
-      --ink: #eef0f3;
-      --ink-dim: #8b93a1;
-      --line: #2c3038;
-      --dot: #33383f;
-      --accent: #6d9bff;
-      --accent-soft: #1c2942;
-      --accent-ink: #0c1526;
-      --gold: #f0c05e;
-      --danger: #ef7a8c;
-      --diet-vegan: #7fce93;
-      --diet-vegan-bg: #1b2f22;
-      --diet-gf: #64c9c9;
-      --diet-gf-bg: #17302f;
-      --diet-veg: #e0b567;
-      --diet-veg-bg: #332711;
-      --diet-other: #a2a9b5;
-      --diet-other-bg: #262a30;
-      --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 26px -14px rgba(0, 0, 0, 0.6);
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #16181c;
-    --surface: #1e2126;
-    --surface-2: #24272d;
-    --ink: #eef0f3;
-    --ink-dim: #8b93a1;
-    --line: #2c3038;
-    --dot: #33383f;
-    --accent: #6d9bff;
-    --accent-soft: #1c2942;
-    --accent-ink: #0c1526;
-    --gold: #f0c05e;
-    --danger: #ef7a8c;
-    --diet-vegan: #7fce93;
-    --diet-vegan-bg: #1b2f22;
-    --diet-gf: #64c9c9;
-    --diet-gf-bg: #17302f;
-    --diet-veg: #e0b567;
-    --diet-veg-bg: #332711;
-    --diet-other: #a2a9b5;
-    --diet-other-bg: #262a30;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 10px 26px -14px rgba(0, 0, 0, 0.6);
-  }
+  /* Committed to a single light, white-background look regardless of the
+     viewer's OS theme — this page intentionally does not follow dark mode. */
 
   * { box-sizing: border-box; }
   html, body {
