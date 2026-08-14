@@ -276,6 +276,15 @@
     border: 1.5px solid var(--surface);
   }
 
+  /* Dietary-restriction ring on the seat itself — color matches each diet's
+     token everywhere else in the UI (sidebar chips, kitchen sheet). Skipped
+     when the guest is also VIP so the two rings never fight for the same
+     border; VIP takes visual priority in that case. */
+  .seat.occupied.seat-diet-vegan:not(.vip) { box-shadow: 0 0 0 2px var(--diet-vegan), 0 2px 3px rgba(20, 24, 33, 0.18); }
+  .seat.occupied.seat-diet-vegetarian:not(.vip) { box-shadow: 0 0 0 2px var(--diet-veg), 0 2px 3px rgba(20, 24, 33, 0.18); }
+  .seat.occupied.seat-diet-gluten_free:not(.vip) { box-shadow: 0 0 0 2px var(--diet-gf), 0 2px 3px rgba(20, 24, 33, 0.18); }
+  .seat.occupied.seat-diet-other:not(.vip) { box-shadow: 0 0 0 2px var(--diet-other), 0 2px 3px rgba(20, 24, 33, 0.18); }
+
   /* VIP priority indicator — elegant gold ring on the seat + a small star
      badge, opposite corner from the allergy badge so they never collide. */
   .seat.occupied.vip { box-shadow: 0 0 0 2px var(--gold), 0 2px 3px rgba(20, 24, 33, 0.18); }
@@ -1703,7 +1712,11 @@
         const cy = table.height / 2 + seat.y;
 
         const seatEl = document.createElement("div");
-        seatEl.className = "seat " + (occupant ? "occupied" : "empty") + (occupant && occupant.vip ? " vip" : "");
+        seatEl.className =
+          "seat " +
+          (occupant ? "occupied" : "empty") +
+          (occupant && occupant.vip ? " vip" : "") +
+          (occupant && occupant.diet && occupant.diet !== "none" ? " seat-diet-" + occupant.diet : "");
         seatEl.style.left = cx + "px";
         seatEl.style.top = cy + "px";
 
