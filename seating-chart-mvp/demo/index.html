@@ -59,6 +59,33 @@
     letter-spacing: -0.01em;
     margin: 0;
   }
+
+  .brand-zone {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 8px;
+    border: 1.5px dashed transparent;
+    cursor: pointer;
+  }
+  .brand-zone:hover, .brand-zone.dragover { border-color: var(--accent); background: var(--accent-soft); }
+  .brand-logo { max-height: 30px; max-width: 160px; display: block; }
+  .brand-remove {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: none;
+    background: var(--surface-2);
+    color: var(--ink-dim);
+    font-size: 0.6rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+  .brand-zone:hover .brand-remove.has-logo { display: flex; }
   header .tag {
     font-size: 0.65rem;
     font-weight: 700;
@@ -88,6 +115,7 @@
   }
   .toolbar-btn:hover { border-color: var(--accent); color: var(--accent); }
   .toolbar-btn.icon-only { padding: 0.4rem 0.55rem; }
+  .lang-select { padding: 0.4rem 0.5rem; font-family: inherit; }
 
   .add-element-wrap { position: relative; }
   .add-element-menu {
@@ -247,6 +275,26 @@
     justify-content: center;
     border: 1.5px solid var(--surface);
   }
+
+  /* VIP priority indicator — elegant gold ring on the seat + a small star
+     badge, opposite corner from the allergy badge so they never collide. */
+  .seat.occupied.vip { box-shadow: 0 0 0 2px var(--gold), 0 2px 3px rgba(20, 24, 33, 0.18); }
+  .vip-badge {
+    position: absolute;
+    left: -3px;
+    top: -3px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #fff;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--surface);
+  }
+  .guest-card.vip { border-color: var(--gold); background: linear-gradient(0deg, var(--surface-2), var(--surface-2)), #fffdf5; }
 
   .seat-label {
     position: absolute;
@@ -830,6 +878,7 @@
 
   #kitchen-print { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #111; padding: 24px; }
   #kitchen-print h1 { font-size: 20px; margin: 0 0 2px; }
+  .kp-brand-logo, #cards-print .kp-brand-logo { display: block; max-height: 40px; margin-bottom: 10px; }
   #kitchen-print .kp-meta { font-size: 11px; color: #666; margin-bottom: 18px; }
   #kitchen-print .kp-table { break-inside: avoid; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 8px; padding: 10px 14px; }
   #kitchen-print .kp-table h2 { font-size: 14px; margin: 0 0 6px; }
@@ -894,32 +943,38 @@
 
 <div class="app">
   <header>
-    <h1>Plano de Mesas</h1>
+    <div class="brand-zone" id="brand-zone" data-i18n-title="app.brandHint">
+      <h1 id="brand-title" data-i18n="app.title">Plano de Mesas</h1>
+      <img id="brand-logo" class="brand-logo" alt="Logo" style="display:none" />
+      <button class="brand-remove" id="brand-remove" type="button" data-i18n-title="app.removeLogo" style="display:none">✕</button>
+    </div>
+    <input type="file" id="brand-logo-input" accept="image/png,image/jpeg" style="display:none" />
     <span class="tag">Demo</span>
 
     <div class="toolbar">
       <div class="add-element-wrap">
-        <button id="add-element-btn" class="toolbar-btn" type="button">+ Elemento</button>
+        <button id="add-element-btn" class="toolbar-btn" type="button" data-i18n="toolbar.addElement">+ Elemento</button>
         <div class="add-element-menu" id="add-element-menu">
-          <button type="button" data-decor="dance">💃 Pista de baile</button>
-          <button type="button" data-decor="stage">🎤 Escenario</button>
-          <button type="button" data-decor="dj">🎧 Cabina DJ</button>
-          <button type="button" data-decor="arch">⛪ Arco / Altar</button>
-          <button type="button" data-decor="gift">🎁 Mesa de regalos</button>
-          <button type="button" data-decor="cake">🎂 Pastel</button>
-          <button type="button" data-wall="1">▭ Muro</button>
+          <button type="button" data-decor="dance"><span data-i18n="elements.dance">💃 Pista de baile</span></button>
+          <button type="button" data-decor="stage"><span data-i18n="elements.stage">🎤 Escenario</span></button>
+          <button type="button" data-decor="dj"><span data-i18n="elements.dj">🎧 Cabina DJ</span></button>
+          <button type="button" data-decor="arch"><span data-i18n="elements.arch">⛪ Arco / Altar</span></button>
+          <button type="button" data-decor="gift"><span data-i18n="elements.gift">🎁 Mesa de regalos</span></button>
+          <button type="button" data-decor="cake"><span data-i18n="elements.cake">🎂 Pastel</span></button>
+          <button type="button" data-wall="1"><span data-i18n="elements.wall">▭ Muro</span></button>
         </div>
       </div>
-      <button id="export-kitchen-btn" class="toolbar-btn" type="button">🍽️ PDF cocina</button>
-      <button id="export-cards-btn" class="toolbar-btn" type="button">🎫 Tarjetas</button>
-      <button id="scope-info-btn" class="toolbar-btn icon-only" type="button" title="Alcance de este prototipo">ℹ️</button>
+      <button id="export-kitchen-btn" class="toolbar-btn" type="button" data-i18n="toolbar.kitchen">🍽️ PDF cocina</button>
+      <button id="export-cards-btn" class="toolbar-btn" type="button" data-i18n="toolbar.cards">🎫 Tarjetas</button>
+      <button id="scope-info-btn" class="toolbar-btn icon-only" type="button" data-i18n-title="toolbar.scopeInfo">ℹ️</button>
+      <select id="lang-select" class="toolbar-btn lang-select" title="Language / Idioma">
+        <option value="es">🌐 ES</option>
+        <option value="en">🌐 EN</option>
+      </select>
     </div>
 
     <div class="spacer"></div>
-    <div class="hint">
-      Arrastra una mesa para moverla · asa azul superior para <b>rotar</b>, esquina para <b>escalar</b> ·
-      selecciona una mesa para ver los presets de nº de sillas · arrastra un invitado hasta una silla vacía o haz clic en una silla libre.
-    </div>
+    <div class="hint" id="app-hint" data-i18n-html="app.hint"></div>
   </header>
   <div class="body">
     <div class="canvas-wrap">
@@ -928,7 +983,7 @@
     <aside id="sidebar">
       <div class="head">
         <div>
-          <h2>Invitados sin mesa</h2>
+          <h2 data-i18n="sidebar.heading">Invitados sin mesa</h2>
           <div class="count" id="guest-count">0</div>
         </div>
         <button class="drawer-close" id="drawer-close" type="button" aria-label="Cerrar">✕</button>
@@ -936,22 +991,22 @@
       <div class="import-row">
         <button class="import-btn" id="import-btn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-          Importar Excel / CSV
+          <span data-i18n="sidebar.import">Importar Excel / CSV</span>
         </button>
         <input type="file" id="import-file-input" accept=".xlsx,.xls,.csv" style="display:none" />
       </div>
-      <input class="search" id="search" type="text" placeholder="Buscar invitado…" />
+      <input class="search" id="search" type="text" data-i18n-placeholder="sidebar.searchPlaceholder" />
       <div id="guest-list"></div>
       <div class="legend">
-        <div class="row"><span class="dot empty"></span> Silla libre</div>
-        <div class="row"><span class="dot occ"></span> Silla ocupada</div>
+        <div class="row"><span class="dot empty"></span> <span data-i18n="legend.empty">Silla libre</span></div>
+        <div class="row"><span class="dot occ"></span> <span data-i18n="legend.occupied">Silla ocupada</span></div>
       </div>
     </aside>
   </div>
 </div>
 <div class="backdrop" id="backdrop"></div>
 <button class="fab" id="fab" type="button">
-  <span>Invitados</span>
+  <span data-i18n="sidebar.fabLabel">Invitados</span>
   <span class="fab-count" id="fab-count">0</span>
 </button>
 <div id="toast"></div>
@@ -960,62 +1015,43 @@
 <div id="cards-print" class="print-only"></div>
 
 <div class="editor-backdrop" id="scope-backdrop">
-  <div class="editor" role="dialog" aria-label="Alcance de este prototipo">
+  <div class="editor" role="dialog" aria-label="Scope">
     <div class="editor-head">
-      <h3>Alcance de este prototipo</h3>
+      <h3 data-i18n="scope.title">Alcance de este prototipo</h3>
       <button class="editor-close" id="scope-close" type="button" aria-label="Cerrar">✕</button>
     </div>
-    <div class="scope-body">
-      <p><strong>Funciona en este demo (sin backend):</strong></p>
-      <ul>
-        <li>Diseño de plano: arrastrar, rotar, escalar mesas y elementos</li>
-        <li>Muros y elementos de zonificación (pista, escenario, DJ, altar…)</li>
-        <li>Mesas redondas, rectangulares e imperiales</li>
-        <li>Importar invitados desde Excel/CSV</li>
-        <li>Asignación por arrastre o por clic + selector</li>
-        <li>Restricciones alimentarias y alergias graves</li>
-        <li>Filtro de RSVP (solo confirmados se sientan)</li>
-        <li>Exportar PDF de cocina y tarjetas de asiento</li>
-      </ul>
-      <p><strong>Requiere un backend (ya diseñado, ver README del proyecto):</strong></p>
-      <ul>
-        <li>Sincronización con el gestor central de invitados</li>
-        <li>RSVP automático desde un formulario externo</li>
-        <li>Actualización en tiempo real de carteles físicos</li>
-        <li>Colaboración multiusuario simultánea</li>
-      </ul>
-    </div>
+    <div class="scope-body" id="scope-body"></div>
   </div>
 </div>
 
 <div class="editor-backdrop" id="editor-backdrop">
   <div class="editor" role="dialog" aria-label="Editar mesa">
     <div class="editor-head">
-      <h3>Editar mesa</h3>
+      <h3 data-i18n="tableEditor.title">Editar mesa</h3>
       <button class="editor-close" id="editor-close" type="button" aria-label="Cerrar">✕</button>
     </div>
 
     <div>
-      <label class="field-label" for="editor-name">Nombre</label>
+      <label class="field-label" for="editor-name" data-i18n="tableEditor.name">Nombre</label>
       <input class="name-input" id="editor-name" type="text" maxlength="40" />
     </div>
 
     <div>
-      <label class="field-label">Forma</label>
+      <label class="field-label" data-i18n="tableEditor.shape">Forma</label>
       <div class="shape-toggle">
-        <button class="shape-btn" id="shape-round" type="button" data-shape="round">◯ Redonda</button>
-        <button class="shape-btn" id="shape-rect" type="button" data-shape="rect">▭ Rectangular</button>
-        <button class="shape-btn" id="shape-imperial" type="button" data-shape="imperial">▭▭ Imperial</button>
+        <button class="shape-btn" id="shape-round" type="button" data-shape="round" data-i18n="tableEditor.round">◯ Redonda</button>
+        <button class="shape-btn" id="shape-rect" type="button" data-shape="rect" data-i18n="tableEditor.rect">▭ Rectangular</button>
+        <button class="shape-btn" id="shape-imperial" type="button" data-shape="imperial" data-i18n="tableEditor.imperial">▭▭ Imperial</button>
       </div>
     </div>
 
     <div>
-      <label class="field-label">Color</label>
+      <label class="field-label" data-i18n="tableEditor.color">Color</label>
       <div class="swatches" id="swatches"></div>
     </div>
 
     <div>
-      <label class="field-label">Sillas</label>
+      <label class="field-label" data-i18n="tableEditor.chairs">Sillas</label>
       <div class="stepper">
         <button class="stepper-btn" id="chairs-minus" type="button" aria-label="Quitar silla">−</button>
         <span class="stepper-value" id="chairs-value">8</span>
@@ -1024,36 +1060,36 @@
     </div>
 
     <div>
-      <label class="field-label">Imagen de fondo</label>
+      <label class="field-label" data-i18n="tableEditor.bgImage">Imagen de fondo</label>
       <div class="photo-row">
-        <div class="photo-preview" id="editor-photo-preview">Sin foto</div>
+        <div class="photo-preview" id="editor-photo-preview" data-i18n="common.noPhoto">Sin foto</div>
         <div class="photo-actions">
-          <button class="photo-btn" id="editor-photo-pick" type="button">Subir imagen</button>
-          <button class="photo-btn remove" id="editor-photo-remove" type="button">Quitar</button>
+          <button class="photo-btn" id="editor-photo-pick" type="button" data-i18n="common.uploadImage">Subir imagen</button>
+          <button class="photo-btn remove" id="editor-photo-remove" type="button" data-i18n="common.remove">Quitar</button>
         </div>
       </div>
       <input type="file" id="editor-photo-input" accept="image/*" style="display:none" />
 
       <div id="image-adjust" class="image-adjust">
         <div class="slider-row">
-          <label class="field-label" for="editor-image-zoom">Zoom</label>
+          <label class="field-label" for="editor-image-zoom" data-i18n="tableEditor.zoom">Zoom</label>
           <input type="range" id="editor-image-zoom" min="100" max="300" step="5" />
         </div>
         <div class="slider-row">
-          <label class="field-label" for="editor-image-x">Posición horizontal</label>
+          <label class="field-label" for="editor-image-x" data-i18n="tableEditor.posX">Posición horizontal</label>
           <input type="range" id="editor-image-x" min="0" max="100" step="1" />
         </div>
         <div class="slider-row">
-          <label class="field-label" for="editor-image-y">Posición vertical</label>
+          <label class="field-label" for="editor-image-y" data-i18n="tableEditor.posY">Posición vertical</label>
           <input type="range" id="editor-image-y" min="0" max="100" step="1" />
         </div>
-        <button class="photo-btn" id="editor-image-reset" type="button">Restablecer ajuste</button>
+        <button class="photo-btn" id="editor-image-reset" type="button" data-i18n="tableEditor.resetAdjust">Restablecer ajuste</button>
       </div>
     </div>
 
     <button class="duplicate-btn" id="editor-duplicate" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
-      Duplicar mesa
+      <span data-i18n="tableEditor.duplicate">Duplicar mesa</span>
     </button>
   </div>
 </div>
@@ -1061,61 +1097,78 @@
 <div class="editor-backdrop" id="guest-editor-backdrop">
   <div class="editor" role="dialog" aria-label="Editar invitado">
     <div class="editor-head">
-      <h3>Editar invitado</h3>
+      <h3 data-i18n="guestEditor.title">Editar invitado</h3>
       <button class="editor-close" id="guest-editor-close" type="button" aria-label="Cerrar">✕</button>
     </div>
 
     <div>
-      <label class="field-label" for="guest-editor-name">Nombre</label>
+      <label class="field-label" for="guest-editor-name" data-i18n="tableEditor.name">Nombre</label>
       <input class="name-input" id="guest-editor-name" type="text" maxlength="60" />
     </div>
 
     <div>
-      <label class="field-label" for="guest-editor-rsvp">RSVP</label>
+      <label class="field-label" for="guest-editor-rsvp" data-i18n="guestEditor.rsvp">RSVP</label>
       <select class="select-input" id="guest-editor-rsvp">
-        <option value="confirmed">✅ Confirmado</option>
-        <option value="pending">⏳ Pendiente</option>
-        <option value="declined">✕ Declinado</option>
+        <option value="confirmed" data-i18n="rsvp.confirmed">✅ Confirmado</option>
+        <option value="pending" data-i18n="rsvp.pending">⏳ Pendiente</option>
+        <option value="declined" data-i18n="rsvp.declined">✕ Declinado</option>
       </select>
     </div>
 
     <div>
-      <label class="field-label" for="guest-editor-diet">Restricción alimentaria</label>
+      <label class="field-label" for="guest-editor-diet" data-i18n="guestEditor.diet">Restricción alimentaria</label>
       <select class="select-input" id="guest-editor-diet">
-        <option value="none">Ninguna</option>
-        <option value="vegan">Vegano</option>
-        <option value="vegetarian">Vegetariano</option>
-        <option value="gluten_free">Sin gluten</option>
-        <option value="other">Alergias / otro</option>
+        <option value="none" data-i18n="diet.none">Ninguna</option>
+        <option value="vegan" data-i18n="diet.vegan">Vegano</option>
+        <option value="vegetarian" data-i18n="diet.vegetarian">Vegetariano</option>
+        <option value="gluten_free" data-i18n="diet.gluten_free">Sin gluten</option>
+        <option value="other" data-i18n="diet.other">Alergias / otro</option>
       </select>
     </div>
 
     <label class="checkbox-row">
       <input type="checkbox" id="guest-editor-child" />
-      🧒 Es niño/a
+      <span data-i18n="guestEditor.child">🧒 Es niño/a</span>
     </label>
 
     <label class="checkbox-row">
       <input type="checkbox" id="guest-editor-allergy" />
-      ⚠️ Alergia grave (se marca en el plano)
+      <span data-i18n="guestEditor.allergy">⚠️ Alergia grave (se marca en el plano)</span>
+    </label>
+
+    <label class="checkbox-row">
+      <input type="checkbox" id="guest-editor-vip" />
+      <span data-i18n="guestEditor.vip">⭐ Invitado VIP (prioridad, se resalta en el plano)</span>
     </label>
 
     <div>
-      <label class="field-label" for="guest-editor-note">Nota</label>
-      <textarea class="note-input" id="guest-editor-note" maxlength="200" placeholder="Ej: silla de bebé, alergia severa, se sienta con..."></textarea>
+      <label class="field-label" data-i18n="guestEditor.photo">Foto de perfil</label>
+      <div class="photo-row">
+        <div class="photo-preview" id="guest-editor-photo-preview" data-i18n="common.noPhoto">Sin foto</div>
+        <div class="photo-actions">
+          <button class="photo-btn" id="guest-editor-photo-pick" type="button" data-i18n="guestEditor.uploadPhoto">Subir foto</button>
+          <button class="photo-btn remove" id="guest-editor-photo-remove" type="button" data-i18n="common.remove">Quitar</button>
+        </div>
+      </div>
+      <input type="file" id="guest-editor-photo-input" accept="image/*" style="display:none" />
     </div>
 
-    <button class="danger-btn" id="guest-editor-unseat" type="button">Quitar de la mesa</button>
+    <div>
+      <label class="field-label" for="guest-editor-note" data-i18n="guestEditor.note">Nota</label>
+      <textarea class="note-input" id="guest-editor-note" maxlength="200" data-i18n-placeholder="guestEditor.notePlaceholder"></textarea>
+    </div>
+
+    <button class="danger-btn" id="guest-editor-unseat" type="button" data-i18n="guestEditor.unseat">Quitar de la mesa</button>
   </div>
 </div>
 
 <div class="editor-backdrop" id="assign-backdrop">
   <div class="editor" role="dialog" aria-label="Asignar invitado">
     <div class="editor-head">
-      <h3>Asignar invitado</h3>
+      <h3 data-i18n="assign.title">Asignar invitado</h3>
       <button class="editor-close" id="assign-close" type="button" aria-label="Cerrar">✕</button>
     </div>
-    <input class="name-input" id="assign-search" type="text" placeholder="Buscar invitado…" />
+    <input class="name-input" id="assign-search" type="text" data-i18n-placeholder="sidebar.searchPlaceholder" />
     <div id="assign-list" class="assign-list"></div>
   </div>
 </div>
@@ -1123,7 +1176,7 @@
 <div class="editor-backdrop" id="import-backdrop">
   <div class="editor import-editor" role="dialog" aria-label="Importar invitados">
     <div class="editor-head">
-      <h3>Importar invitados</h3>
+      <h3 data-i18n="import.title">Importar invitados</h3>
       <button class="editor-close" id="import-close" type="button" aria-label="Cerrar">✕</button>
     </div>
     <div id="import-body"></div>
@@ -1133,6 +1186,224 @@
 <script>
 (function () {
   "use strict";
+
+  // ---------------------------------------------------------------
+  // i18n: a flat dictionary keyed by "namespace.key", one object per
+  // language. t(key) looks up the active language; applyI18n() walks the
+  // DOM for data-i18n[/-placeholder/-title/-html] and fills them in. Static
+  // markup is tagged directly in the HTML above; dynamic strings built in
+  // JS (labels, toasts) call t()/dietLabel()/rsvpLabel() instead of hardcoding text.
+  // ---------------------------------------------------------------
+  const I18N = {
+    es: {
+      "app.title": "Plano de Mesas",
+      "app.brandHint": "Arrastra tu logo aquí o haz clic para subirlo",
+      "app.removeLogo": "Quitar logo",
+      "app.hint": 'Arrastra una mesa para moverla · asa azul superior para <b>rotar</b>, esquina para <b>escalar</b> · selecciona una mesa para ver los presets de nº de sillas · arrastra un invitado hasta una silla vacía o haz clic en una silla libre.',
+      "toolbar.addElement": "+ Elemento",
+      "toolbar.kitchen": "🍽️ PDF cocina",
+      "toolbar.cards": "🎫 Tarjetas",
+      "toolbar.scopeInfo": "Alcance de este prototipo",
+      "elements.dance": "💃 Pista de baile",
+      "elements.stage": "🎤 Escenario",
+      "elements.dj": "🎧 Cabina DJ",
+      "elements.arch": "⛪ Arco / Altar",
+      "elements.gift": "🎁 Mesa de regalos",
+      "elements.cake": "🎂 Pastel",
+      "elements.wall": "▭ Muro",
+      "sidebar.heading": "Invitados sin mesa",
+      "sidebar.import": "Importar Excel / CSV",
+      "sidebar.searchPlaceholder": "Buscar invitado…",
+      "sidebar.fabLabel": "Invitados",
+      "legend.empty": "Silla libre",
+      "legend.occupied": "Silla ocupada",
+      "common.noPhoto": "Sin foto",
+      "common.uploadImage": "Subir imagen",
+      "common.remove": "Quitar",
+      "tableEditor.title": "Editar mesa",
+      "tableEditor.name": "Nombre",
+      "tableEditor.shape": "Forma",
+      "tableEditor.round": "◯ Redonda",
+      "tableEditor.rect": "▭ Rectangular",
+      "tableEditor.imperial": "▭▭ Imperial",
+      "tableEditor.color": "Color",
+      "tableEditor.chairs": "Sillas",
+      "tableEditor.bgImage": "Imagen de fondo",
+      "tableEditor.zoom": "Zoom",
+      "tableEditor.posX": "Posición horizontal",
+      "tableEditor.posY": "Posición vertical",
+      "tableEditor.resetAdjust": "Restablecer ajuste",
+      "tableEditor.duplicate": "Duplicar mesa",
+      "tableEditor.editTitle": "Editar mesa",
+      "guestEditor.title": "Editar invitado",
+      "guestEditor.editTitle": "Editar invitado",
+      "guestEditor.rsvp": "RSVP",
+      "guestEditor.diet": "Restricción alimentaria",
+      "guestEditor.child": "🧒 Es niño/a",
+      "guestEditor.allergy": "⚠️ Alergia grave (se marca en el plano)",
+      "guestEditor.vip": "⭐ Invitado VIP (prioridad, se resalta en el plano)",
+      "guestEditor.photo": "Foto de perfil",
+      "guestEditor.uploadPhoto": "Subir foto",
+      "guestEditor.note": "Nota",
+      "guestEditor.notePlaceholder": "Ej: silla de bebé, alergia severa, se sienta con...",
+      "guestEditor.unseat": "Quitar de la mesa",
+      "assign.title": "Asignar invitado",
+      "assign.empty": "No hay invitados sin mesa que coincidan.",
+      "import.title": "Importar invitados",
+      "scope.title": "Alcance de este prototipo",
+      "scope.worksTitle": "Funciona en este demo (sin backend):",
+      "scope.works": ["Diseño de plano: arrastrar, rotar, escalar mesas y elementos", "Muros y elementos de zonificación (pista, escenario, DJ, altar…)", "Mesas redondas, rectangulares e imperiales", "Importar invitados desde Excel/CSV", "Asignación por arrastre o por clic + selector", "Restricciones alimentarias, alergias graves y prioridad VIP", "Filtro de RSVP (solo confirmados se sientan)", "Fotos de invitados, logo de marca, e idioma ES/EN", "Exportar PDF de cocina y tarjetas de asiento"],
+      "scope.needsTitle": "Requiere un backend (ya diseñado, ver README del proyecto):",
+      "scope.needs": ["Sincronización con el gestor central de invitados", "RSVP automático desde un formulario externo", "Actualización en tiempo real de carteles físicos", "Colaboración multiusuario simultánea"],
+      "diet.none": "Ninguna",
+      "diet.vegan": "Vegano",
+      "diet.vegetarian": "Vegetariano",
+      "diet.gluten_free": "Sin gluten",
+      "diet.other": "Alergias / otro",
+      "rsvp.confirmed": "✅ Confirmado",
+      "rsvp.pending": "⏳ Pendiente",
+      "rsvp.declined": "✕ Declinado",
+      "seat.editHint": " — clic para editar",
+      "seat.assignHint": "Silla libre — clic para asignar un invitado",
+      "list.noneUnassigned": "Todos los invitados tienen mesa asignada.",
+      "list.noResults": "Sin resultados.",
+      "toast.tableMoved": (n) => `${n}: posición actualizada`,
+      "toast.tableRotated": (n, r) => `${n}: rotación ${r}°`,
+      "toast.tableScaled": (n, s) => `${n}: escala ${s}×`,
+      "toast.chairsChanged": (n, c) => `${n}: ahora tiene ${c} sillas`,
+      "toast.tableDuplicated": (n) => `${n}: mesa duplicada`,
+      "toast.guestSeated": (g, t, s) => `${g} sentado en ${t}, silla ${s}`,
+      "toast.guestUnseated": (g) => `${g} quitado de la mesa`,
+      "toast.rsvpBlocked": (g, r) => `${g} no está confirmado (${r}) — actualiza su RSVP antes de sentarlo`,
+      "toast.importSummary": (n, seated) => `Se importaron ${n} invitados` + (seated ? ` (${seated} ya sentados)` : ""),
+      "toast.importNoValid": "No se encontró ningún invitado válido en el archivo.",
+      "toast.logoUpdated": "Logo actualizado",
+      "toast.logoRemoved": "Logo eliminado",
+      "print.kitchenTitle": "Plano de Mesas — Listado de cocina",
+      "print.generated": (d, n) => `Generado ${d} · ${n} mesas`,
+      "print.diners": (n) => `${n} comensales`,
+      "print.noRestriction": "Sin restricción",
+      "print.menuSummary": "Resumen de menús (invitados sentados):",
+      "print.stillUnseated": (n) => `Confirmados aún sin mesa: ${n}`,
+      "print.noneSeatedYet": "Todavía no hay invitados sentados en ninguna mesa.",
+      "toast.elementAdded": (n) => `${n} añadido — arrástralo a su sitio`,
+      "toast.wallAdded": "Muro añadido — arrastra para moverlo, la esquina para ajustar su longitud",
+      "elements.wallLabel": "Muro",
+    },
+    en: {
+      "app.title": "Seating Chart",
+      "app.brandHint": "Drag your logo here or click to upload",
+      "app.removeLogo": "Remove logo",
+      "app.hint": 'Drag a table to move it · top blue handle to <b>rotate</b>, corner to <b>scale</b> · select a table to see chair-count presets · drag a guest onto an empty seat or click one to assign.',
+      "toolbar.addElement": "+ Element",
+      "toolbar.kitchen": "🍽️ Kitchen PDF",
+      "toolbar.cards": "🎫 Place cards",
+      "toolbar.scopeInfo": "This prototype's scope",
+      "elements.dance": "💃 Dance floor",
+      "elements.stage": "🎤 Stage",
+      "elements.dj": "🎧 DJ booth",
+      "elements.arch": "⛪ Arch / Altar",
+      "elements.gift": "🎁 Gift table",
+      "elements.cake": "🎂 Cake",
+      "elements.wall": "▭ Wall",
+      "sidebar.heading": "Unseated guests",
+      "sidebar.import": "Import Excel / CSV",
+      "sidebar.searchPlaceholder": "Search guest…",
+      "sidebar.fabLabel": "Guests",
+      "legend.empty": "Open seat",
+      "legend.occupied": "Occupied seat",
+      "common.noPhoto": "No photo",
+      "common.uploadImage": "Upload image",
+      "common.remove": "Remove",
+      "tableEditor.title": "Edit table",
+      "tableEditor.name": "Name",
+      "tableEditor.shape": "Shape",
+      "tableEditor.round": "◯ Round",
+      "tableEditor.rect": "▭ Rectangular",
+      "tableEditor.imperial": "▭▭ Imperial",
+      "tableEditor.color": "Color",
+      "tableEditor.chairs": "Chairs",
+      "tableEditor.bgImage": "Background image",
+      "tableEditor.zoom": "Zoom",
+      "tableEditor.posX": "Horizontal position",
+      "tableEditor.posY": "Vertical position",
+      "tableEditor.resetAdjust": "Reset adjustment",
+      "tableEditor.duplicate": "Duplicate table",
+      "tableEditor.editTitle": "Edit table",
+      "guestEditor.title": "Edit guest",
+      "guestEditor.editTitle": "Edit guest",
+      "guestEditor.rsvp": "RSVP",
+      "guestEditor.diet": "Dietary restriction",
+      "guestEditor.child": "🧒 Is a child",
+      "guestEditor.allergy": "⚠️ Severe allergy (flagged on the floor plan)",
+      "guestEditor.vip": "⭐ VIP guest (priority, highlighted on the plan)",
+      "guestEditor.photo": "Profile photo",
+      "guestEditor.uploadPhoto": "Upload photo",
+      "guestEditor.note": "Note",
+      "guestEditor.notePlaceholder": "E.g.: high chair, severe allergy, sits with...",
+      "guestEditor.unseat": "Remove from table",
+      "assign.title": "Assign guest",
+      "assign.empty": "No unseated guests match.",
+      "import.title": "Import guests",
+      "scope.title": "This prototype's scope",
+      "scope.worksTitle": "Works in this demo (no backend):",
+      "scope.works": ["Floor plan design: drag, rotate, scale tables and elements", "Walls and zoning elements (dance floor, stage, DJ, altar…)", "Round, rectangular and imperial tables", "Import guests from Excel/CSV", "Assign by drag-and-drop or click + picker", "Dietary restrictions, severe allergies and VIP priority", "RSVP filter (only confirmed guests can be seated)", "Guest photos, brand logo, and ES/EN language", "Export kitchen PDF and place cards"],
+      "scope.needsTitle": "Needs a backend (already designed, see project README):",
+      "scope.needs": ["Sync with the central guest-list manager", "Automatic RSVP from an external form", "Real-time updates to physical signage", "Simultaneous multi-user collaboration"],
+      "diet.none": "None",
+      "diet.vegan": "Vegan",
+      "diet.vegetarian": "Vegetarian",
+      "diet.gluten_free": "Gluten-free",
+      "diet.other": "Allergies / other",
+      "rsvp.confirmed": "✅ Confirmed",
+      "rsvp.pending": "⏳ Pending",
+      "rsvp.declined": "✕ Declined",
+      "seat.editHint": " — click to edit",
+      "seat.assignHint": "Open seat — click to assign a guest",
+      "list.noneUnassigned": "Every guest has a table.",
+      "list.noResults": "No results.",
+      "toast.tableMoved": (n) => `${n}: position updated`,
+      "toast.tableRotated": (n, r) => `${n}: rotation ${r}°`,
+      "toast.tableScaled": (n, s) => `${n}: scale ${s}×`,
+      "toast.chairsChanged": (n, c) => `${n}: now has ${c} chairs`,
+      "toast.tableDuplicated": (n) => `${n}: table duplicated`,
+      "toast.guestSeated": (g, t, s) => `${g} seated at ${t}, chair ${s}`,
+      "toast.guestUnseated": (g) => `${g} removed from the table`,
+      "toast.rsvpBlocked": (g, r) => `${g} isn't confirmed (${r}) — update their RSVP before seating them`,
+      "toast.importSummary": (n, seated) => `Imported ${n} guests` + (seated ? ` (${seated} already seated)` : ""),
+      "toast.importNoValid": "No valid guests were found in the file.",
+      "toast.logoUpdated": "Logo updated",
+      "toast.logoRemoved": "Logo removed",
+      "print.kitchenTitle": "Seating Chart — Kitchen Sheet",
+      "print.generated": (d, n) => `Generated ${d} · ${n} tables`,
+      "print.diners": (n) => `${n} guests`,
+      "print.noRestriction": "No restriction",
+      "print.menuSummary": "Menu summary (seated guests):",
+      "print.stillUnseated": (n) => `Confirmed guests still unseated: ${n}`,
+      "print.noneSeatedYet": "No guests are seated at any table yet.",
+      "toast.elementAdded": (n) => `${n} added — drag it into place`,
+      "toast.wallAdded": "Wall added — drag to move it, use the corner to resize its length",
+      "elements.wallLabel": "Wall",
+    },
+  };
+  let lang = "es";
+  function t(key, ...args) {
+    const entry = (I18N[lang] && I18N[lang][key]) ?? I18N.es[key] ?? key;
+    return typeof entry === "function" ? entry(...args) : entry;
+  }
+  function applyI18n() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+    document.querySelectorAll("[data-i18n-title]").forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+    document.querySelectorAll("[data-i18n-html]").forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
+    const scopeBody = document.getElementById("scope-body");
+    if (scopeBody) {
+      scopeBody.innerHTML =
+        `<p><strong>${t("scope.worksTitle")}</strong></p><ul>${t("scope.works").map((li) => `<li>${li}</li>`).join("")}</ul>` +
+        `<p><strong>${t("scope.needsTitle")}</strong></p><ul>${t("scope.needs").map((li) => `<li>${li}</li>`).join("")}</ul>`;
+    }
+  }
 
   // ---------------------------------------------------------------
   // Geometry helpers — mirrors src/lib/seatLayout.js from the MVP source
@@ -1209,6 +1480,30 @@
     return h;
   }
 
+  // Downscale + re-encode an uploaded image client-side before it goes into
+  // state — keeps guest photos and the org logo small (a few KB instead of
+  // multi-MB phone photos) since everything ends up base64-inlined.
+  function compressImageFile(file, maxDim, quality) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("No se pudo cargar la imagen")); };
+      img.src = url;
+    });
+  }
+
   // A guest with a `photo` (base64 data URI or URL) gets a real cropped
   // photo instead of the generated icon — same circular slot either way.
   function avatarMarkup(guest) {
@@ -1240,7 +1535,7 @@
     { id: "t4", type: "round", label: "Mesa 4", targetChairs: 6, width: 110, height: 110, x: 800, y: 440, rotation: 18, scale: 1 },
   ];
 
-  const DIET_LABEL = { none: "", vegan: "Vegano", vegetarian: "Vegetariano", gluten_free: "Sin gluten", other: "Alergias" };
+  function dietLabel(key) { return key === "none" ? "" : t("diet." + key); }
   const CHAIR_PRESETS = [4, 6, 8, 10];
 
   // Zoning elements: decor (dance floor, stage, DJ booth, altar, gifts,
@@ -1274,7 +1569,7 @@
     { id: "g13", name: "Rocío Delgado", tableId: null, seatNumber: null, diet: "vegan", rsvp: "confirmed" },
     { id: "g14", name: "Tomás Pardo", tableId: null, seatNumber: null, diet: "none", rsvp: "confirmed" },
   ];
-  const RSVP_LABEL = { confirmed: "Confirmado", pending: "Pendiente", declined: "Declinado" };
+  function rsvpLabel(key) { return t("rsvp." + key).replace(/^[^\s]+\s/, ""); } // drop the emoji for inline use
 
   const canvas = document.getElementById("canvas");
   const guestList = document.getElementById("guest-list");
@@ -1348,14 +1643,21 @@
         const cy = table.height / 2 + seat.y;
 
         const seatEl = document.createElement("div");
-        seatEl.className = "seat " + (occupant ? "occupied" : "empty");
+        seatEl.className = "seat " + (occupant ? "occupied" : "empty") + (occupant && occupant.vip ? " vip" : "");
         seatEl.style.left = cx + "px";
         seatEl.style.top = cy + "px";
 
         if (occupant) {
           seatEl.innerHTML = avatarMarkup(occupant);
-          seatEl.title = occupant.name + " — clic para editar";
+          seatEl.title = occupant.name + (occupant.vip ? " (VIP)" : "") + t("seat.editHint");
           seatEl.addEventListener("click", (e) => { e.stopPropagation(); openGuestEditor(occupant); });
+          if (occupant.vip) {
+            const star = document.createElement("span");
+            star.className = "vip-badge";
+            star.textContent = "★";
+            star.title = "Invitado VIP";
+            seatEl.appendChild(star);
+          }
           if (occupant.allergySevere) {
             const badge = document.createElement("span");
             badge.className = "allergy-badge";
@@ -1388,7 +1690,7 @@
           label.textContent = firstName(occupant.name) + (last ? " " + last[0] + "." : "");
           frame.appendChild(label);
         } else {
-          seatEl.title = "Silla libre — clic para asignar un invitado";
+          seatEl.title = t("seat.assignHint");
           seatEl.addEventListener("click", (e) => { e.stopPropagation(); openAssignPicker(table.id, seat.seatNumber); });
           frame.appendChild(seatEl);
         }
@@ -1412,7 +1714,7 @@
         preset.addEventListener("click", (e) => {
           e.stopPropagation();
           table.targetChairs = n;
-          toast(`${table.label}: ahora tiene ${n} sillas`);
+          toast(t("toast.chairsChanged", table.label, n));
           renderTables();
         });
         frame.appendChild(preset);
@@ -1435,7 +1737,7 @@
       const editHandle = document.createElement("div");
       editHandle.className = "handle edit-handle";
       editHandle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2 2 0 0 0 0-2.83l-1.17-1.17a2 2 0 0 0-2.83 0L4 15.5V20z"/></svg>';
-      editHandle.title = "Editar mesa";
+      editHandle.title = t("tableEditor.editTitle");
       editHandle.addEventListener("pointerdown", (e) => e.stopPropagation());
       editHandle.addEventListener("click", (e) => { e.stopPropagation(); openTableEditor(table); });
       body.appendChild(editHandle);
@@ -1561,7 +1863,7 @@
     function up() {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
-      toast(`${table.label}: posición actualizada`);
+      toast(t("toast.tableMoved", table.label));
     }
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
@@ -1591,7 +1893,7 @@
     function up() {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
-      toast(`${table.label}: rotación ${table.rotation}°`);
+      toast(t("toast.tableRotated", table.label, table.rotation));
     }
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
@@ -1611,7 +1913,7 @@
     function up() {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
-      toast(`${table.label}: escala ${table.scale.toFixed(2)}×`);
+      toast(t("toast.tableScaled", table.label, table.scale.toFixed(2)));
     }
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
@@ -1639,7 +1941,7 @@
         kind: "decor",
         decorType: btn.dataset.decor,
         emoji: def.emoji,
-        label: def.label,
+        label: t("elements." + btn.dataset.decor).replace(/^[^\s]+\s/, ""),
         width: def.width,
         height: def.height,
         x: 460 - def.width / 2,
@@ -1651,7 +1953,7 @@
       selectedElementId = item.id;
       selectedTableId = null;
       addElementMenu.classList.remove("show");
-      toast(`${def.label} añadido — arrástralo a su sitio`);
+      toast(t("toast.elementAdded", item.label));
       renderTables();
     });
   });
@@ -1660,7 +1962,7 @@
     const item = {
       id: "e" + elementIdCounter++,
       kind: "wall",
-      label: "Muro",
+      label: t("elements.wallLabel"),
       width: 220,
       height: 14,
       x: 380,
@@ -1672,7 +1974,7 @@
     selectedElementId = item.id;
     selectedTableId = null;
     addElementMenu.classList.remove("show");
-    toast("Muro añadido — arrastra para moverlo, la esquina para ajustar su longitud");
+    toast(t("toast.wallAdded"));
     renderTables();
   });
 
@@ -1691,7 +1993,7 @@
     if (unassigned.length === 0) {
       const note = document.createElement("div");
       note.className = "empty-note";
-      note.textContent = guests.some((g) => !g.tableId) ? "Sin resultados." : "Todos los invitados tienen mesa asignada.";
+      note.textContent = guests.some((g) => !g.tableId) ? t("list.noResults") : t("list.noneUnassigned");
       guestList.appendChild(note);
       return;
     }
@@ -1699,13 +2001,20 @@
     for (const guest of unassigned) {
       const notConfirmed = guest.rsvp && guest.rsvp !== "confirmed";
       const card = document.createElement("div");
-      card.className = "guest-card" + (notConfirmed ? " not-confirmed" : "");
+      card.className = "guest-card" + (notConfirmed ? " not-confirmed" : "") + (guest.vip ? " vip" : "");
       card.dataset.id = guest.id;
       card.addEventListener("pointerdown", (e) => startGuestDrag(e, guest, card));
 
       const avatar = document.createElement("div");
       avatar.className = "guest-avatar";
       avatar.innerHTML = avatarMarkup(guest);
+      if (guest.vip) {
+        const star = document.createElement("span");
+        star.className = "vip-badge";
+        star.textContent = "★";
+        star.title = "Invitado VIP";
+        avatar.appendChild(star);
+      }
       if (guest.allergySevere) {
         const badge = document.createElement("span");
         badge.className = "allergy-badge";
@@ -1736,19 +2045,19 @@
         if (notConfirmed) {
           const chip = document.createElement("span");
           chip.className = "rsvp-chip rsvp-" + guest.rsvp;
-          chip.textContent = guest.rsvp === "pending" ? "⏳ Pendiente" : "✕ Declinado";
+          chip.textContent = t(guest.rsvp === "pending" ? "rsvp.pending" : "rsvp.declined");
           chips.appendChild(chip);
         }
         if (guest.diet !== "none") {
           const chip = document.createElement("span");
           chip.className = "diet-chip diet-" + guest.diet;
-          chip.textContent = DIET_LABEL[guest.diet];
+          chip.textContent = dietLabel(guest.diet);
           chips.appendChild(chip);
         }
         if (guest.child) {
           const chip = document.createElement("span");
           chip.className = "child-chip";
-          chip.textContent = "🧒 Niño/a";
+          chip.textContent = t("guestEditor.child");
           chips.appendChild(chip);
         }
         card.appendChild(chips);
@@ -1757,7 +2066,7 @@
       const editBtn = document.createElement("button");
       editBtn.className = "guest-edit-btn";
       editBtn.type = "button";
-      editBtn.title = "Editar invitado";
+      editBtn.title = t("guestEditor.editTitle");
       editBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2 2 0 0 0 0-2.83l-1.17-1.17a2 2 0 0 0-2.83 0L4 15.5V20z"/></svg>';
       editBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
       editBtn.addEventListener("click", (e) => { e.stopPropagation(); openGuestEditor(guest); });
@@ -1783,13 +2092,13 @@
   // rule (only confirmed guests get seated) only has to live in one place.
   function seatGuest(guest, tableId, seatNumber) {
     if (guest.rsvp && guest.rsvp !== "confirmed") {
-      toast(`${guest.name} no está confirmado (${RSVP_LABEL[guest.rsvp]}) — actualiza su RSVP antes de sentarlo`);
+      toast(t("toast.rsvpBlocked", guest.name, rsvpLabel(guest.rsvp)));
       return false;
     }
     guest.tableId = tableId;
     guest.seatNumber = seatNumber;
     const table = tables.find((t) => t.id === tableId);
-    toast(`${guest.name} sentado en ${table.label}, silla ${seatNumber + 1}`);
+    toast(t("toast.guestSeated", guest.name, table.label, seatNumber + 1));
     renderTables();
     renderGuests();
     return true;
@@ -1797,7 +2106,7 @@
 
   function startGuestDrag(e, guest, card) {
     if (guest.rsvp && guest.rsvp !== "confirmed") {
-      toast(`${guest.name} no está confirmado todavía (${RSVP_LABEL[guest.rsvp]})`);
+      toast(t("toast.rsvpBlocked", guest.name, rsvpLabel(guest.rsvp)));
       return;
     }
     e.preventDefault();
@@ -1870,7 +2179,7 @@
     if (!guest) return;
     guest.tableId = null;
     guest.seatNumber = null;
-    toast(`${guest.name} quitado de la mesa`);
+    toast(t("toast.guestUnseated", guest.name));
     renderTables();
     renderGuests();
   }
@@ -1886,9 +2195,20 @@
   const guestEditorDiet = document.getElementById("guest-editor-diet");
   const guestEditorChild = document.getElementById("guest-editor-child");
   const guestEditorAllergy = document.getElementById("guest-editor-allergy");
+  const guestEditorVip = document.getElementById("guest-editor-vip");
   const guestEditorNote = document.getElementById("guest-editor-note");
   const guestEditorUnseat = document.getElementById("guest-editor-unseat");
+  const guestPhotoPreview = document.getElementById("guest-editor-photo-preview");
+  const guestPhotoInput = document.getElementById("guest-editor-photo-input");
   let editingGuest = null;
+
+  function syncGuestPhotoPreview(guest) {
+    if (guest.photo) {
+      guestPhotoPreview.innerHTML = `<img src="${guest.photo}" alt="">`;
+    } else {
+      guestPhotoPreview.textContent = "Sin foto";
+    }
+  }
 
   function openGuestEditor(guest) {
     editingGuest = guest;
@@ -1897,8 +2217,10 @@
     guestEditorDiet.value = guest.diet || "none";
     guestEditorChild.checked = !!guest.child;
     guestEditorAllergy.checked = !!guest.allergySevere;
+    guestEditorVip.checked = !!guest.vip;
     guestEditorNote.value = guest.note || "";
     guestEditorUnseat.style.display = guest.tableId ? "block" : "none";
+    syncGuestPhotoPreview(guest);
     guestEditorBackdrop.classList.add("show");
   }
   function closeGuestEditor() {
@@ -1936,6 +2258,34 @@
   guestEditorAllergy.addEventListener("change", (e) => {
     if (!editingGuest) return;
     editingGuest.allergySevere = e.target.checked;
+    renderTables();
+    renderGuests();
+  });
+  guestEditorVip.addEventListener("change", (e) => {
+    if (!editingGuest) return;
+    editingGuest.vip = e.target.checked;
+    renderTables();
+    renderGuests();
+  });
+  document.getElementById("guest-editor-photo-pick").addEventListener("click", () => guestPhotoInput.click());
+  guestPhotoInput.addEventListener("change", async () => {
+    const file = guestPhotoInput.files && guestPhotoInput.files[0];
+    guestPhotoInput.value = "";
+    if (!file || !editingGuest) return;
+    try {
+      editingGuest.photo = await compressImageFile(file, 160, 0.82);
+      syncGuestPhotoPreview(editingGuest);
+      renderTables();
+      renderGuests();
+    } catch (err) {
+      console.error(err);
+      toast("No se pudo procesar la imagen.");
+    }
+  });
+  document.getElementById("guest-editor-photo-remove").addEventListener("click", () => {
+    if (!editingGuest) return;
+    editingGuest.photo = null;
+    syncGuestPhotoPreview(editingGuest);
     renderTables();
     renderGuests();
   });
@@ -1985,7 +2335,7 @@
     if (!candidates.length) {
       const empty = document.createElement("div");
       empty.className = "import-empty";
-      empty.textContent = "No hay invitados sin mesa que coincidan.";
+      empty.textContent = t("assign.empty");
       assignListEl.appendChild(empty);
       return;
     }
@@ -2237,7 +2587,7 @@
       y: editingTable.y + 30,
     };
     tables.push(copy);
-    toast(`${editingTable.label}: mesa duplicada`);
+    toast(t("toast.tableDuplicated", editingTable.label));
     openTableEditor(copy);
     renderTables();
   });
@@ -2566,7 +2916,7 @@
     }
 
     if (!newGuests.length) {
-      toast("No se encontró ningún invitado válido en el archivo.");
+      toast(t("toast.importNoValid"));
       return;
     }
 
@@ -2574,7 +2924,7 @@
     closeImportModal();
     renderTables();
     renderGuests();
-    toast(`Se importaron ${newGuests.length} invitados` + (seated ? ` (${seated} ya sentados)` : ""));
+    toast(t("toast.importSummary", newGuests.length, seated));
   }
 
   // ---------------------------------------------------------------
@@ -2587,21 +2937,25 @@
     return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
+  function printBrandHeader() {
+    return brandLogo ? `<img src="${brandLogo}" class="kp-brand-logo" alt="Logo">` : "";
+  }
+
   function populateKitchenPrint() {
     const container = document.getElementById("kitchen-print");
     const dietCounts = { none: 0, vegan: 0, vegetarian: 0, gluten_free: 0, other: 0 };
-    let html = `<h1>Plano de Mesas — Listado de cocina</h1>`;
-    html += `<div class="kp-meta">Generado ${new Date().toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })} · ${tables.length} mesas</div>`;
+    let html = printBrandHeader() + `<h1>${t("print.kitchenTitle")}</h1>`;
+    html += `<div class="kp-meta">${t("print.generated", new Date().toLocaleDateString(lang === "en" ? "en-US" : "es-ES", { day: "numeric", month: "long", year: "numeric" }), tables.length)}</div>`;
 
     for (const table of tables) {
       const seated = guests
         .filter((g) => g.tableId === table.id)
         .sort((a, b) => a.seatNumber - b.seatNumber);
       if (!seated.length) continue;
-      html += `<div class="kp-table"><h2>${escapeHtml2(table.label)} — ${seated.length} comensales</h2><table>`;
+      html += `<div class="kp-table"><h2>${escapeHtml2(table.label)} — ${t("print.diners", seated.length)}</h2><table>`;
       for (const g of seated) {
         dietCounts[g.diet] = (dietCounts[g.diet] || 0) + 1;
-        const dietText = g.diet !== "none" ? escapeHtml2(DIET_LABEL[g.diet]) : "Sin restricción";
+        const dietText = g.diet !== "none" ? escapeHtml2(dietLabel(g.diet)) : t("print.noRestriction");
         const allergy = g.allergySevere ? ' <span class="kp-allergy">⚠ ALERGIA GRAVE</span>' : "";
         html += `<tr><td>${escapeHtml2(g.name)}</td><td>${dietText}${allergy}</td><td>${g.note ? escapeHtml2(g.note) : ""}</td></tr>`;
       }
@@ -2609,9 +2963,9 @@
     }
 
     const unseated = guests.filter((g) => !g.tableId && g.rsvp === "confirmed");
-    html += `<div class="kp-summary"><strong>Resumen de menús (invitados sentados):</strong> `;
-    html += Object.entries(dietCounts).filter(([, n]) => n > 0).map(([k, n]) => `${DIET_LABEL[k] || "Sin restricción"}: ${n}`).join(" · ");
-    html += `<br>Confirmados aún sin mesa: ${unseated.length}</div>`;
+    html += `<div class="kp-summary"><strong>${t("print.menuSummary")}</strong> `;
+    html += Object.entries(dietCounts).filter(([, n]) => n > 0).map(([k, n]) => `${dietLabel(k) || t("print.noRestriction")}: ${n}`).join(" · ");
+    html += `<br>${t("print.stillUnseated", unseated.length)}</div>`;
 
     container.innerHTML = html;
   }
@@ -2619,7 +2973,7 @@
   function populateCardsPrint() {
     const container = document.getElementById("cards-print");
     const seated = guests.filter((g) => g.tableId).sort((a, b) => a.name.localeCompare(b.name, "es"));
-    let html = `<div class="cp-grid">`;
+    let html = printBrandHeader() + `<div class="cp-grid">`;
     for (const g of seated) {
       const table = tables.find((t) => t.id === g.tableId);
       html += `<div class="cp-card"><div class="cp-name">${escapeHtml2(g.name)}</div><div class="cp-table">${escapeHtml2(table ? table.label : "")}</div></div>`;
@@ -2627,7 +2981,7 @@
     html += `</div>`;
     container.innerHTML = seated.length
       ? html
-      : `<p style="text-align:center;color:#888;">Todavía no hay invitados sentados en ninguna mesa.</p>`;
+      : `<p style="text-align:center;color:#888;">${t("print.noneSeatedYet")}</p>`;
   }
 
   document.getElementById("export-kitchen-btn").addEventListener("click", () => {
@@ -2643,6 +2997,69 @@
   window.addEventListener("afterprint", () => { delete document.body.dataset.print; });
 
   // ---------------------------------------------------------------
+  // Branding: drag & drop (or click) a company logo onto the header.
+  // Once set, it replaces the default title in the UI and at the top of
+  // both print exports — a white-label wedding-planner org would see
+  // their own mark everywhere instead of "Plano de Mesas".
+  // ---------------------------------------------------------------
+  let brandLogo = null;
+  const brandZone = document.getElementById("brand-zone");
+  const brandTitle = document.getElementById("brand-title");
+  const brandLogoImg = document.getElementById("brand-logo");
+  const brandRemoveBtn = document.getElementById("brand-remove");
+  const brandLogoInput = document.getElementById("brand-logo-input");
+
+  function applyBranding() {
+    if (brandLogo) {
+      brandTitle.style.display = "none";
+      brandLogoImg.style.display = "block";
+      brandLogoImg.src = brandLogo;
+      brandRemoveBtn.classList.add("has-logo");
+    } else {
+      brandTitle.style.display = "block";
+      brandLogoImg.style.display = "none";
+      brandRemoveBtn.classList.remove("has-logo");
+    }
+  }
+
+  async function setBrandLogoFromFile(file) {
+    if (!file || !/^image\/(png|jpeg)$/.test(file.type)) {
+      toast("Sube un logo en PNG o JPG.");
+      return;
+    }
+    try {
+      brandLogo = await compressImageFile(file, 240, 0.9);
+      applyBranding();
+      toast(t("toast.logoUpdated"));
+    } catch (err) {
+      console.error(err);
+      toast("No se pudo procesar el logo.");
+    }
+  }
+
+  brandZone.addEventListener("click", (e) => {
+    if (e.target === brandRemoveBtn) return;
+    brandLogoInput.click();
+  });
+  brandLogoInput.addEventListener("change", () => {
+    setBrandLogoFromFile(brandLogoInput.files && brandLogoInput.files[0]);
+    brandLogoInput.value = "";
+  });
+  brandZone.addEventListener("dragover", (e) => { e.preventDefault(); brandZone.classList.add("dragover"); });
+  brandZone.addEventListener("dragleave", () => brandZone.classList.remove("dragover"));
+  brandZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    brandZone.classList.remove("dragover");
+    setBrandLogoFromFile(e.dataTransfer.files && e.dataTransfer.files[0]);
+  });
+  brandRemoveBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    brandLogo = null;
+    applyBranding();
+    toast(t("toast.logoRemoved"));
+  });
+
+  // ---------------------------------------------------------------
   // Scope info: what this static, backend-less prototype can and can't do.
   // ---------------------------------------------------------------
   const scopeBackdrop = document.getElementById("scope-backdrop");
@@ -2650,6 +3067,20 @@
   document.getElementById("scope-close").addEventListener("click", () => scopeBackdrop.classList.remove("show"));
   scopeBackdrop.addEventListener("click", (e) => { if (e.target === scopeBackdrop) scopeBackdrop.classList.remove("show"); });
 
+  // ---------------------------------------------------------------
+  // Language switch — re-applies static translations and re-renders the
+  // dynamic bits (diet/RSVP chips, seat tooltips) that read t() live.
+  // ---------------------------------------------------------------
+  const langSelect = document.getElementById("lang-select");
+  langSelect.value = lang;
+  langSelect.addEventListener("change", (e) => {
+    lang = e.target.value;
+    applyI18n();
+    renderTables();
+    renderGuests();
+  });
+
+  applyI18n();
   renderTables();
   renderGuests();
 })();
