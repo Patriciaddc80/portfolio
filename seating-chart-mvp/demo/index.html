@@ -1289,6 +1289,34 @@
       "toast.elementAdded": (n) => `${n} añadido — arrástralo a su sitio`,
       "toast.wallAdded": "Muro añadido — arrastra para moverlo, la esquina para ajustar su longitud",
       "elements.wallLabel": "Muro",
+      "demo.table1": "Mesa 1 — Familia",
+      "demo.table2": "Mesa 2 — Amigos",
+      "demo.table3": "Mesa Presidencial",
+      "demo.table4": "Mesa 4",
+      "common.copySuffix": " (copia)",
+      "common.delete": "Eliminar",
+      "toast.dropNearSeat": "Suelta el invitado más cerca de una silla libre",
+      "toast.xlsxUnsupported": "Este navegador no puede leer .xlsx directamente — exporta como CSV.",
+      "toast.formatUnsupported": "Formato no compatible. Usa .xlsx o .csv (el .xls antiguo no está soportado).",
+      "toast.noDataRows": "El archivo no tiene filas de datos.",
+      "toast.readFailed": "No se pudo leer el archivo. Prueba a exportarlo como CSV.",
+      "toast.selectNameColumn": "Selecciona qué columna es el Nombre antes de importar.",
+      "preset.changeTo": (n) => `Cambiar a ${n} sillas`,
+      "assign.pendingSuffix": " (RSVP pendiente)",
+      "import.columnFallback": (i) => `Columna ${i}`,
+      "import.stepText": (filename, count) => `Archivo: <span class="import-filename">${filename}</span> — ${count} filas detectadas. Indica qué representa cada columna:`,
+      "import.cancel": "Cancelar",
+      "import.confirm": "Importar",
+      "field.ignore": "Ignorar",
+      "field.name": "Nombre",
+      "field.table": "Mesa",
+      "field.seat": "Silla (nº)",
+      "field.diet": "Restricción alimentaria",
+      "field.child": "Niño/a",
+      "field.allergy": "Alergia grave",
+      "field.rsvp": "RSVP",
+      "field.note": "Nota",
+      "print.severeAllergy": "⚠ ALERGIA GRAVE",
     },
     en: {
       "app.title": "Seating Chart",
@@ -1384,6 +1412,34 @@
       "toast.elementAdded": (n) => `${n} added — drag it into place`,
       "toast.wallAdded": "Wall added — drag to move it, use the corner to resize its length",
       "elements.wallLabel": "Wall",
+      "demo.table1": "Table 1 — Family",
+      "demo.table2": "Table 2 — Friends",
+      "demo.table3": "Head Table",
+      "demo.table4": "Table 4",
+      "common.copySuffix": " (copy)",
+      "common.delete": "Delete",
+      "toast.dropNearSeat": "Drop the guest closer to an open seat",
+      "toast.xlsxUnsupported": "This browser can't read .xlsx directly — export as CSV instead.",
+      "toast.formatUnsupported": "Unsupported format. Use .xlsx or .csv (legacy .xls isn't supported).",
+      "toast.noDataRows": "The file has no data rows.",
+      "toast.readFailed": "Couldn't read the file. Try exporting it as CSV.",
+      "toast.selectNameColumn": "Select which column is the Name before importing.",
+      "preset.changeTo": (n) => `Switch to ${n} chairs`,
+      "assign.pendingSuffix": " (RSVP pending)",
+      "import.columnFallback": (i) => `Column ${i}`,
+      "import.stepText": (filename, count) => `File: <span class="import-filename">${filename}</span> — ${count} rows detected. Tell us what each column is:`,
+      "import.cancel": "Cancel",
+      "import.confirm": "Import",
+      "field.ignore": "Ignore",
+      "field.name": "Name",
+      "field.table": "Table",
+      "field.seat": "Seat #",
+      "field.diet": "Dietary restriction",
+      "field.child": "Child",
+      "field.allergy": "Severe allergy",
+      "field.rsvp": "RSVP",
+      "field.note": "Note",
+      "print.severeAllergy": "⚠ SEVERE ALLERGY",
     },
   };
   let lang = "es";
@@ -1528,11 +1584,15 @@
   // ---------------------------------------------------------------
   // Demo data
   // ---------------------------------------------------------------
+  // nameKey tracks the demo label as a *live* translation while it hasn't
+  // been customized — renaming a table (or duplicating it) clears the key,
+  // since at that point the text is the user's own and shouldn't be
+  // silently overwritten by a later language switch.
   const tables = [
-    { id: "t1", type: "round", label: "Mesa 1 — Familia", targetChairs: 8, width: 130, height: 130, x: 250, y: 190, rotation: 0, scale: 1 },
-    { id: "t2", type: "round", label: "Mesa 2 — Amigos", targetChairs: 8, width: 130, height: 130, x: 600, y: 170, rotation: 0, scale: 1 },
-    { id: "t3", type: "rect", label: "Mesa Presidencial", targetChairs: 6, width: 220, height: 90, x: 420, y: 440, rotation: 0, scale: 1 },
-    { id: "t4", type: "round", label: "Mesa 4", targetChairs: 6, width: 110, height: 110, x: 800, y: 440, rotation: 18, scale: 1 },
+    { id: "t1", type: "round", label: t("demo.table1"), nameKey: "demo.table1", targetChairs: 8, width: 130, height: 130, x: 250, y: 190, rotation: 0, scale: 1 },
+    { id: "t2", type: "round", label: t("demo.table2"), nameKey: "demo.table2", targetChairs: 8, width: 130, height: 130, x: 600, y: 170, rotation: 0, scale: 1 },
+    { id: "t3", type: "rect", label: t("demo.table3"), nameKey: "demo.table3", targetChairs: 6, width: 220, height: 90, x: 420, y: 440, rotation: 0, scale: 1 },
+    { id: "t4", type: "round", label: t("demo.table4"), nameKey: "demo.table4", targetChairs: 6, width: 110, height: 110, x: 800, y: 440, rotation: 18, scale: 1 },
   ];
 
   function dietLabel(key) { return key === "none" ? "" : t("diet." + key); }
@@ -1710,7 +1770,7 @@
         preset.style.top = py + "px";
         preset.style.transform = `rotate(${-table.rotation}deg)`;
         preset.textContent = n;
-        preset.title = `Cambiar a ${n} sillas`;
+        preset.title = t("preset.changeTo", n);
         preset.addEventListener("click", (e) => {
           e.stopPropagation();
           table.targetChairs = n;
@@ -1807,7 +1867,7 @@
     const delHandle = document.createElement("div");
     delHandle.className = "handle delete-handle";
     delHandle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-8 0 1 12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l1-12"/></svg>';
-    delHandle.title = "Eliminar";
+    delHandle.title = t("common.delete");
     delHandle.style.left = "-10px";
     delHandle.style.top = "-10px";
     delHandle.addEventListener("pointerdown", (e) => e.stopPropagation());
@@ -2146,7 +2206,7 @@
       if (target && seatGuest(guest, target.tableId, target.seatNumber)) {
         closeDrawer();
       } else if (!target) {
-        toast("Suelta el invitado más cerca de una silla libre");
+        toast(t("toast.dropNearSeat"));
       }
     }
 
@@ -2349,7 +2409,7 @@
       avatar.innerHTML = avatarMarkup(guest);
       const name = document.createElement("span");
       name.className = "assign-name";
-      name.textContent = guest.name + (pending ? " (RSVP pendiente)" : "");
+      name.textContent = guest.name + (pending ? t("assign.pendingSuffix") : "");
       row.appendChild(avatar);
       row.appendChild(name);
       row.addEventListener("click", () => {
@@ -2484,6 +2544,7 @@
   editorName.addEventListener("input", (e) => {
     if (!editingTable) return;
     editingTable.label = e.target.value;
+    editingTable.nameKey = null; // now custom text — stop auto-translating it
     renderTables();
   });
 
@@ -2582,7 +2643,8 @@
     const copy = {
       ...editingTable,
       id: nextTableId(),
-      label: editingTable.label + " (copia)",
+      label: editingTable.label + t("common.copySuffix"),
+      nameKey: null,
       x: editingTable.x + 30,
       y: editingTable.y + 30,
     };
@@ -2745,17 +2807,21 @@
   let importRows = null;
   let importIdCounter = 1;
 
-  const FIELD_OPTIONS = [
-    ["ignore", "Ignorar"],
-    ["name", "Nombre"],
-    ["table", "Mesa"],
-    ["seat", "Silla (nº)"],
-    ["diet", "Restricción alimentaria"],
-    ["child", "Niño/a"],
-    ["allergy", "Alergia grave"],
-    ["rsvp", "RSVP"],
-    ["note", "Nota"],
-  ];
+  // A function (not a static array) so relabeling picks up the active
+  // language even if the import modal is reopened after a language switch.
+  function fieldOptions() {
+    return [
+      ["ignore", t("field.ignore")],
+      ["name", t("field.name")],
+      ["table", t("field.table")],
+      ["seat", t("field.seat")],
+      ["diet", t("field.diet")],
+      ["child", t("field.child")],
+      ["allergy", t("field.allergy")],
+      ["rsvp", t("field.rsvp")],
+      ["note", t("field.note")],
+    ];
+  }
 
   function guessField(header) {
     const h = (header || "").toLowerCase();
@@ -2782,34 +2848,34 @@
         rows = parseCSV(await file.text());
       } else if (lower.endsWith(".xlsx")) {
         if (typeof DecompressionStream === "undefined") {
-          toast("Este navegador no puede leer .xlsx directamente — exporta como CSV.");
+          toast(t("toast.xlsxUnsupported"));
           return;
         }
         rows = await readXlsx(await file.arrayBuffer());
       } else {
-        toast("Formato no compatible. Usa .xlsx o .csv (el .xls antiguo no está soportado).");
+        toast(t("toast.formatUnsupported"));
         return;
       }
       rows = rows.filter((r) => r.some((c) => String(c ?? "").trim() !== ""));
-      if (rows.length < 2) { toast("El archivo no tiene filas de datos."); return; }
+      if (rows.length < 2) { toast(t("toast.noDataRows")); return; }
       openImportMapper(rows, file.name);
     } catch (err) {
       console.error(err);
-      toast("No se pudo leer el archivo. Prueba a exportarlo como CSV.");
+      toast(t("toast.readFailed"));
     }
   });
 
   function openImportMapper(rows, filename) {
     importRows = rows;
-    const headers = rows[0].map((h, i) => (h && String(h).trim()) || `Columna ${i + 1}`);
+    const headers = rows[0].map((h, i) => (h && String(h).trim()) || t("import.columnFallback", i + 1));
     const previewRows = rows.slice(1, 4);
 
-    let html = `<p class="import-step">Archivo: <span class="import-filename">${escapeHtml(filename)}</span> — ${rows.length - 1} filas detectadas. Indica qué representa cada columna:</p>`;
+    let html = `<p class="import-step">${t("import.stepText", escapeHtml(filename), rows.length - 1)}</p>`;
     html += '<div class="mapping-scroll"><table class="mapping-table"><thead><tr>';
     headers.forEach((h, i) => {
       html +=
         `<th>${escapeHtml(h)}<br><select data-col="${i}">` +
-        FIELD_OPTIONS.map(([val, label]) => `<option value="${val}" ${guessField(h) === val ? "selected" : ""}>${label}</option>`).join("") +
+        fieldOptions().map(([val, label]) => `<option value="${val}" ${guessField(h) === val ? "selected" : ""}>${label}</option>`).join("") +
         "</select></th>";
     });
     html += "</tr></thead><tbody>";
@@ -2818,8 +2884,8 @@
     });
     html += "</tbody></table></div>";
     html +=
-      '<div class="import-actions"><button class="import-cancel-btn" type="button" id="import-cancel">Cancelar</button>' +
-      '<button class="import-primary-btn" type="button" id="import-confirm">Importar</button></div>';
+      `<div class="import-actions"><button class="import-cancel-btn" type="button" id="import-cancel">${t("import.cancel")}</button>` +
+      `<button class="import-primary-btn" type="button" id="import-confirm">${t("import.confirm")}</button></div>`;
 
     importBody.innerHTML = html;
     importBackdrop.classList.add("show");
@@ -2862,7 +2928,7 @@
       if (sel.value !== "ignore") mapping[sel.value] = parseInt(sel.dataset.col, 10);
     });
     if (mapping.name === undefined) {
-      toast("Selecciona qué columna es el Nombre antes de importar.");
+      toast(t("toast.selectNameColumn"));
       return;
     }
 
@@ -2956,7 +3022,7 @@
       for (const g of seated) {
         dietCounts[g.diet] = (dietCounts[g.diet] || 0) + 1;
         const dietText = g.diet !== "none" ? escapeHtml2(dietLabel(g.diet)) : t("print.noRestriction");
-        const allergy = g.allergySevere ? ' <span class="kp-allergy">⚠ ALERGIA GRAVE</span>' : "";
+        const allergy = g.allergySevere ? ` <span class="kp-allergy">${t("print.severeAllergy")}</span>` : "";
         html += `<tr><td>${escapeHtml2(g.name)}</td><td>${dietText}${allergy}</td><td>${g.note ? escapeHtml2(g.note) : ""}</td></tr>`;
       }
       html += `</table></div>`;
@@ -3075,6 +3141,7 @@
   langSelect.value = lang;
   langSelect.addEventListener("change", (e) => {
     lang = e.target.value;
+    tables.forEach((table) => { if (table.nameKey) table.label = t(table.nameKey); });
     applyI18n();
     renderTables();
     renderGuests();
